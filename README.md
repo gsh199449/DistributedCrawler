@@ -11,11 +11,9 @@ DistributedCrawler
 
 	```Java
 	private static String dst = "hdfs://gs-pc:9000/home/test/qq.txt";//首页的链接暂存地
-	private static String localSrc = "/home/gaoshen/qq.txt";//在master机器的暂存地
 	private static int depth = 3;//深度
 	private static int topN = 50;//每页抓取的最大链接数
 	private static String outputPath = "hdfs://gs-pc:9000/home/test/output";//最终结果的输出路径
-	private static String url = "http://news.qq.com";//需要抓取的地址
 	private static String jobName = "DistributeCrawler";//Job的名称
 	```
 
@@ -36,7 +34,7 @@ jj = new Jedis("localhost",8888);
 
 # 索引流程 #
 
-1. 首先通过`JsonReader`一行一行的读出json内容（每一行是一个Json表达式）。`JsonReader`是通过`RandomAccessFil`e来实现的。因为他既可以满足从`InputStream`中按行读入的要求，还带有获取当前偏移量和skip方法，极为的好用。`JsonReader`返回一个`Hit`类型的封装。`Hit`封装了PagePOJO、文件名和在此文件中的起始偏移量。
+1. 首先通过`JsonReader`一行一行的读出json内容（每一行是一个Json表达式）。`JsonReader`是通过`RandomAccessFile`来实现的。因为他既可以满足从`InputStream`中按行读入的要求，还带有获取当前偏移量和skip方法，极为的好用。`JsonReader`返回一个`Hit`类型的封装。`Hit`封装了PagePOJO、文件名和在此文件中的起始偏移量。
 2. 提取出每一个`Hit`里面的正文、文件名和偏移量，并用`Lucene`索引。不储存content，但是储存文件名和起始偏移量。这样就可以摆脱对数据库的依赖。
 
 # 贝叶斯分类器 #
@@ -76,7 +74,7 @@ jj = new Jedis("localhost",8888);
 
 # 下一步的工作 #
 
-- 制作并测试163,凤凰,新浪等新闻网站的抽取器.测试正则表达式.
-- 爬虫在爬取的时候自动判断这个连接是属于那个网站的,并自动选择对应的连接和正文抽取器.
-- 分布式抓取的时候让每一台Slave每次map只抓取一个网站.
+- 利用Redis建立一个像Nutch一样的CrawlDB,通过维护CrawlDB来实现分布式的抓取和任务调度.
+- 搭建一个分布式的Solr服务器集群
+- 通过Solr实现分布式的索引和搜索服务
 

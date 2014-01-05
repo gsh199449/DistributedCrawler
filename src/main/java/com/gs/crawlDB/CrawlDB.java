@@ -1,4 +1,4 @@
-package com.gs.CrawlDB;
+package com.gs.crawlDB;
 
 public class CrawlDB {
 	

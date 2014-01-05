@@ -1,5 +1,6 @@
 DistributedCrawler
 =================
+
 # 简介 #
 
 这是一个基于Hadoop的分布式爬虫，目前只支持抓取腾讯新闻中心的新闻内容。支持插件机制，可以通过实现Extractor接口自己编写插件已实现对于各种网站的抓取和内容提取。
@@ -25,6 +26,7 @@ jj = new Jedis("localhost",8888);
 3.然后就可以在Hadoop平台上运行了。
 
 # 抓取流程 #
+
 1. 首先先从`news.qq.com`上下载首页的所有连接。并存储到master本地，再写入HDFS。
 2. 然后通过HDFS的本地计算将一个文件分发到各台Slaves上面。
 3. 然后各台Slave机器调用map方法开始抓取。若未达到topN和depth限制则将本页面的连接加入到本机的待抓取队列中。再加入队列之前与Redis服务器进行通信，以确保该url未被其他机器抓取。
@@ -33,15 +35,18 @@ jj = new Jedis("localhost",8888);
 6. 最后通过Hadoop的`context`写入。
 
 # 索引流程 #
+
 1. 首先通过`JsonReader`一行一行的读出json内容（每一行是一个Json表达式）。`JsonReader`是通过`RandomAccessFil`e来实现的。因为他既可以满足从`InputStream`中按行读入的要求，还带有获取当前偏移量和skip方法，极为的好用。`JsonReader`返回一个`Hit`类型的封装。`Hit`封装了PagePOJO、文件名和在此文件中的起始偏移量。
 2. 提取出每一个`Hit`里面的正文、文件名和偏移量，并用`Lucene`索引。不储存content，但是储存文件名和起始偏移量。这样就可以摆脱对数据库的依赖。
 
 # 贝叶斯分类器 #
+
 - 在搜索方法中加入了分类的逻辑，如果搜索时在参数中声明需要分类
 ，则通过贝叶斯方法进行分类。
 - 使用贝叶斯分类器的时候，要进行参数设置，并通过`MapMaker`生成每一个类的map，即训练分类器。
 
 ## 训练贝叶斯分类器 ##
+
 1. 将训练集生成为`TrainingDataManager`识别放map格式。
 2. 调用`MapMaker`的make方法，传入训练集的根目录。会在每一个分类的目录下生成一个map文件，里面是存储当前分类的每一个词的词频。**注意：如果训练集的文本不是txt或者TXT格式的话需要在`make`方法里面设置文件类型。**
 3. 在`StopWordsHandler`里面设置停用词的路径。
@@ -50,10 +55,15 @@ jj = new Jedis("localhost",8888);
 6. 都设置好之后调用`BayesClassifier`的`classify`方法传入待分类的文本，返回值就是`Strng`类型的分类名。注意：`BayesClassifier`是单例模式不可直接构造需要调用`getInstance`方法。
 
 # 使用Carrot2插件进行聚类 #
+
 在搜索模块包含了一个聚类插件,是通过Carrot2实现的,具体使用方法如下.
+
 ## 对所有的文档进行聚类 ##
+
 调用`com.gs.cluster.Cluster`这个类的cluster方法,并传入由Crawler爬取好的Json格式的文档的的路径,即可返回一个`ProcessingResult`类型的Result.`ProcessingResult`里面的内容查看方法请参考[Carrot2文档](http://download.carrot2.org/stable/javadoc/).
+
 ## 对指定的文档进行聚类 ##
+
 这个方法适用于搜索时候对于搜索的结果进行聚类.搜索完毕之后将索引的`PagePOJO`封装成一个List传给cluster,聚类完毕之后,返回一个类型为`Map<String,List<String>>`的result.`Map<String,List<String>>`.这个map的key存放的是类型的名称,value的List里面存放的是该类型包含的所有文档的标题.
 
 # 站点测试 #
@@ -61,6 +71,7 @@ jj = new Jedis("localhost",8888);
 这个Pane是用来测试实验室的几个网站是否正常.
 
 # Index #
+
 这个Pane是用来对Hadoop爬虫处理好的Json格式的新闻内容进行索引的工具.主要通过Lucene实现索引.在Json框中输入文件所在的文件夹的位置,index框中输入需要存放index文件的文件夹的路径.
 
 # 下一步的工作 #
@@ -68,3 +79,4 @@ jj = new Jedis("localhost",8888);
 - 制作并测试163,凤凰,新浪等新闻网站的抽取器.测试正则表达式.
 - 爬虫在爬取的时候自动判断这个连接是属于那个网站的,并自动选择对应的连接和正文抽取器.
 - 分布式抓取的时候让每一台Slave每次map只抓取一个网站.
+

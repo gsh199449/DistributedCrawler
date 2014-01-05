@@ -4,7 +4,7 @@
 
   <groupId>com.gs</groupId>
   <artifactId>DistributedCrawler</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1-beat</version>
   <packaging>jar</packaging>
 
   <name>DistributedCrawler</name>

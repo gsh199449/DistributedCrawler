@@ -1,6 +1,6 @@
 package com.gs.indexer;
 
-import com.gs.crawler.PagePOJO;
+import com.gs.model.PagePOJO;
 
 public class Hit {
         public Hit(PagePOJO pagePOJO, long startOffset,String filename) {

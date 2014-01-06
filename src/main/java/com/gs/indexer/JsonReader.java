@@ -17,7 +17,8 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.gs.crawler.PagePOJO;
+import com.gs.model.PagePOJO;
+
 
 /**
  * 读取分布式爬虫处理好的Json文件

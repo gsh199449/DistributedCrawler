@@ -19,7 +19,8 @@ import org.apache.lucene.document.Document;
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import com.gs.Classifier.BayesClassifier;
-import com.gs.crawler.PagePOJO;
+import com.gs.model.PagePOJO;
+
 
 /**
  * @author GaoShen

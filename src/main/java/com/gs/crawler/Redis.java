@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import com.gs.utils.URL;
 
 import redis.clients.jedis.Jedis;
-
+@Deprecated
 public class Redis {
 	private Logger logger = Logger.getLogger(this.getClass());
 	private static Jedis jj;
@@ -13,7 +13,7 @@ public class Redis {
 
 	private Redis() {
 		try {
-			jj = new Jedis("localhost",6379);
+			jj = new Jedis("localhost");
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}

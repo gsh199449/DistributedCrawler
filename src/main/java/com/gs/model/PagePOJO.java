@@ -1,7 +1,7 @@
 /**
  * GS
  */
-package com.gs.crawler;
+package com.gs.model;
 
 import com.google.gson.Gson;
 

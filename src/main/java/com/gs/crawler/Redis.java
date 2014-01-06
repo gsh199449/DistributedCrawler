@@ -29,7 +29,7 @@ public class Redis {
 		return jj.exists(u.url);
 	}
 
-	public void add(URL u) {
-		jj.set(u.url, String.valueOf(u.level));
+	public void add(Object k,Object v) {
+		jj.set(k.toString(),v.toString());
 	}
 }

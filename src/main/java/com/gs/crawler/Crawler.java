@@ -21,7 +21,9 @@ import com.gs.extractor.impl.TencentNewsLinkExtractor;
 import com.gs.extractor.impl.WangYiWapNewsContentExtractor;
 import com.gs.extractor.impl.WangYiWapNewsLinkExtractor;
 import com.gs.extractor.impl.WangYiWapNewsTitleExtractor;
+import com.gs.model.PagePOJO;
 import com.gs.utils.URL;
+
 
 /**
  * @author gaoshen
@@ -108,7 +110,7 @@ public class Crawler {
 			if (r.hasFetched(u)) {
 				continue;
 			}
-			r.add(u);// 向Redis里添加URL
+			r.add(u.url,u.level);// 向Redis里添加URL
 			String html = HTMLDownloader.down(u);// 下载html
 			if (html == null || html.equals(""))// 判断html是否为空
 				continue;

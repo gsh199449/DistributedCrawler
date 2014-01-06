@@ -11,8 +11,15 @@ import org.apache.solr.common.SolrInputDocument;
 
 import com.gs.model.PagePOJO;
 
-
 public class SolrIndex {
+	
+	/**
+	 * @author GS
+	 * @param set 待索引的PagePOJO集合
+	 * @param SERVER_URL Solr服务器的ServerURL,例如:http://localhost:8983/solr/
+	 * @throws SolrServerException
+	 * @throws IOException
+	 */
 	public static final void index(final Set<PagePOJO> set,
 			final String SERVER_URL) throws SolrServerException, IOException {
 		SolrServer server = new HttpSolrServer(SERVER_URL);

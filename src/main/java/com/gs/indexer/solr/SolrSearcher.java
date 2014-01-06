@@ -15,8 +15,15 @@ import com.gs.dao.PageDAO;
 import com.gs.dao.impl.PageDAOHBaseImpl;
 import com.gs.model.PagePOJO;
 
-
 public class SolrSearcher {
+	
+	/**
+	 * @author GS
+	 * @param queryString 查询字符串
+	 * @param serverurl Solr服务器的URL,例如:http://localhost:8983/solr/
+	 * @return 结果集
+	 * @throws SolrServerException
+	 */
 	public static final Set<PagePOJO> search(final String queryString,
 			final String serverurl) throws SolrServerException {
 		PageDAO dao = new PageDAOHBaseImpl();

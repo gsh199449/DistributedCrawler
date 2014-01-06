@@ -4,6 +4,10 @@ import com.gs.dao.PageDAO;
 import com.gs.model.PagePOJO;
 
 
+/**
+ * PageDAO的HBase实现版本
+ * @author GS
+ */
 public class PageDAOHBaseImpl implements PageDAO {
 	
 	@Override

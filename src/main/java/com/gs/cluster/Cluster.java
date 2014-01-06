@@ -19,9 +19,10 @@ import org.carrot2.core.attribute.CommonAttributesDescriptor;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.gs.crawler.PagePOJO;
 import com.gs.indexer.Hit;
 import com.gs.indexer.JsonReader;
+import com.gs.model.PagePOJO;
+
 
 /**
  * 聚类器,提供两种聚类方式

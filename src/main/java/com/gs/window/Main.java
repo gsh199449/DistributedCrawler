@@ -42,8 +42,10 @@ import org.carrot2.core.ProcessingResult;
 import com.gs.indexer.Indexer;
 import com.gs.indexer.Hit;
 import com.gs.cluster.Cluster;
-import com.gs.crawler.PagePOJO;
 import com.gs.indexer.Searcher;
+import com.gs.model.PagePOJO;
+
+
 import java.awt.Font;
 import javax.swing.JComboBox;
 

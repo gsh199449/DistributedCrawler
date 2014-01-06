@@ -2,13 +2,14 @@ package com.gs.crawler;
 
 import org.apache.log4j.Logger;
 
-import com.gs.extractor.URL;
+import com.gs.utils.URL;
 
 import redis.clients.jedis.Jedis;
 
 public class Redis {
 	private Logger logger = Logger.getLogger(this.getClass());
 	private static Jedis jj;
+	private final static Redis INSTANCE = new Redis();
 
 	private Redis() {
 		try {
@@ -18,7 +19,7 @@ public class Redis {
 		}
 	}
 
-	private final static Redis INSTANCE = new Redis();
+	
 
 	public static Redis getInstance() {
 		return INSTANCE;

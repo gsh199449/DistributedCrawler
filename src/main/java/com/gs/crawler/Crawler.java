@@ -6,22 +6,22 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.gs.extractor.ContentExtractor;
-import com.gs.extractor.DefaultContentExtractor;
-import com.gs.extractor.DefaultLinkExtractor;
-import com.gs.extractor.DefaultTitleExtractor;
-import com.gs.extractor.HTMLDownloader;
 import com.gs.extractor.LinkExtractor;
-import com.gs.extractor.SinaNewsContentExtractor;
-import com.gs.extractor.SinaNewsLinkExtractor;
-import com.gs.extractor.SinaNewsTitleExtractor;
-import com.gs.extractor.TecentNewsTitleExtractor;
-import com.gs.extractor.TencentNewsContentExtractor;
-import com.gs.extractor.TencentNewsLinkExtractor;
 import com.gs.extractor.TitleExtractor;
-import com.gs.extractor.URL;
-import com.gs.extractor.WangYiWapNewsContentExtractor;
-import com.gs.extractor.WangYiWapNewsLinkExtractor;
-import com.gs.extractor.WangYiWapNewsTitleExtractor;
+import com.gs.extractor.impl.DefaultContentExtractor;
+import com.gs.extractor.impl.DefaultLinkExtractor;
+import com.gs.extractor.impl.DefaultTitleExtractor;
+import com.gs.extractor.impl.HTMLDownloader;
+import com.gs.extractor.impl.SinaNewsContentExtractor;
+import com.gs.extractor.impl.SinaNewsLinkExtractor;
+import com.gs.extractor.impl.SinaNewsTitleExtractor;
+import com.gs.extractor.impl.TecentNewsTitleExtractor;
+import com.gs.extractor.impl.TencentNewsContentExtractor;
+import com.gs.extractor.impl.TencentNewsLinkExtractor;
+import com.gs.extractor.impl.WangYiWapNewsContentExtractor;
+import com.gs.extractor.impl.WangYiWapNewsLinkExtractor;
+import com.gs.extractor.impl.WangYiWapNewsTitleExtractor;
+import com.gs.utils.URL;
 
 /**
  * @author gaoshen

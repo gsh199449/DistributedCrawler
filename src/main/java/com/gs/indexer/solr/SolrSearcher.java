@@ -35,7 +35,7 @@ public class SolrSearcher {
 		SolrDocumentList docs = response.getResults();
 		Set<PagePOJO> result = new HashSet<PagePOJO>();
 		for (SolrDocument doc : docs) {
-			int id = (int) doc.getFieldValue("id");
+			int id = Integer.valueOf((String) doc.getFieldValue("id"));
 			result.add(dao.loadPage(id));
 		}
 		return result;

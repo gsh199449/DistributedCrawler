@@ -12,12 +12,16 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.solr.client.solrj.SolrServerException;
 
+import com.gs.crawlDB.CrawlDB;
 import com.gs.crawler.Crawler;
+import com.gs.indexer.solr.SolrIndex;
 
 /**
- * @author gaoshen Crawler运行主类，包括Mapper和Main
- *         我们认为url.txt中的连接为0深度，所设置的deepth为页面level。
+ * Crawler运行主类，包括Mapper和Main. 我们认为url.txt中的连接为0深度，所设置的deepth为页面level。
+ * 
+ * @author gaoshen
  */
 public class MainClass {
 	private static final String rootPath = "hdfs://gs-pc:9000/home/test/";
@@ -26,23 +30,31 @@ public class MainClass {
 	private static final int topN = 80;// 每页抓取的最大链接数
 	private static final String outputPath = rootPath + "output";// 最终结果的输出路径
 	private static final String jobName = "DistributeCrawler";// Job的名称
+	private static final String crawlDBHost = "localhost";//CrawlDB的IP
+	private static final int crawlDBPost = 6377;//CrawlDB的端口
+	private static final String crawlDBPassword = "940409";//CrawlDB的密码
+	private static final int crawlDBTimeout = 1000;//CrawlDB的连接超时时间
+	private static final int crawlDBToCrawlDB = 0;//CrawlDB的待抓取的数据库编号
+	private static final int crawlDBCrawledDB = 1;//CrawlDB的已抓取的数据库编号
+	private static final String SolrURL = "http://localhost:8888/solr";//Solr服务器URL
 
 	/**
-	 * @author gaoshen Mapper类
+	 * Mapper类
+	 * 
+	 * @author gaoshen
 	 */
 	public static class CrawlMapper extends
 			Mapper<LongWritable, Text, NullWritable, Text> {
-		
+
 		public void map(LongWritable key, Text value, Context context)
 				throws IOException, InterruptedException {
-			String r = "";
+			CrawlDB db = new CrawlDB(crawlDBHost, crawlDBPost, crawlDBPassword, crawlDBTimeout, crawlDBToCrawlDB, crawlDBCrawledDB);
 			Crawler c = new Crawler(key.toString(), value.toString(), topN,
-					depth);// 以Input文件的行偏移量作为crawler的id
-			for (String s : c.start()) {
-				r += s + "\r";// 向context中写入Json
-			}
-			if (!r.equals("")) {
-				context.write(NullWritable.get(), new Text(r));
+					depth, db, context);// 以Input文件的行偏移量作为crawler的id
+			try {
+				SolrIndex.index(c.start(), SolrURL);
+			} catch (SolrServerException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -55,6 +67,7 @@ public class MainClass {
 		}
 		ExternalJARAdder adder = new ExternalJARAdder(fs, conf);
 		adder.add(rootPath + "libs/gson-2.2.4.jar");
+		adder.add(rootPath + "libs/solr-solrj-4.0.0.jar");
 		Job job = new Job(conf, jobName);
 		job.setJarByClass(MainClass.class);
 		job.setMapperClass(CrawlMapper.class);

@@ -4,16 +4,24 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+
+
 import org.apache.commons.pool.impl.GenericObjectPool.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import com.gs.crawler.Crawler;
 import com.gs.utils.URL;
 
 public final class CrawlDB {
 	private static JedisPool tocrawl;
 	private static JedisPool crawled;
+	private static final Logger LOG = LoggerFactory.getLogger(CrawlDB.class);
+	private int toCrawlDB;
+	private int crawledDB;
 
 	/**
 	 * @param host
@@ -29,6 +37,8 @@ public final class CrawlDB {
 				toCrawlDB);
 		crawled = new JedisPool(new Config(), host, port, timeout, password,
 				crawledDB);
+		this.toCrawlDB = toCrawlDB;
+		this.crawledDB = crawledDB;
 	}
 
 	/**
@@ -46,9 +56,12 @@ public final class CrawlDB {
 			if(u.url == null || u.url.equals(""))break;
 			u.level = Integer.valueOf(toj.get(u.url));
 			toj.del(u.url);
+			//toj.move(u.url, crawledDB);//TODO:Test It!!
 			result.add(u);
 			edj.set(u.url, String.valueOf(u.level));
 		}
+		tocrawl.returnResource(toj);
+		crawled.returnResource(edj);
 		return result;
 	}
 
@@ -63,6 +76,8 @@ public final class CrawlDB {
 			if(edj.exists(u.url)){continue;}//检测是否已经抓取过,已抓取的话不在加入待抓取数据库
 			toj.set(u.url, String.valueOf(u.level));
 		}
+		tocrawl.returnResource(toj);
+		crawled.returnResource(edj);
 	}
 	
 	/**
@@ -70,6 +85,9 @@ public final class CrawlDB {
 	 * @return true-空 false-非空
 	 */
 	public boolean isEmpty(){
-		return tocrawl.getResource().dbSize() == 0?true:false;
+		Jedis toj = tocrawl.getResource();
+		Long size = toj.dbSize();
+		tocrawl.returnResource(toj);
+		return size == 0?true:false;
 	}
 }

@@ -38,6 +38,10 @@ DistributedCrawler
 4. 然后将这个POJO交给Json生成器来生成一个Json内容。
 5. 最后若当前抓取器队列为空且CrawlDB为空的时候该抓取器退出并返回本次所有抓取的PagePOJO的Set.在后在map方法中通过Solr服务器将其索引.
 
+# CrawlDB #
+
+这是使用`Redis`实现的为抓取提供缓存的数据库.CrawlDB分为两个数据库,一个储存待抓取的URL,另一个储存已抓取的URL.对外提供`inject`和`generate`两个方法,`inject`是向CrawlDB中注入待抓取的连接的方法,`generate`是各个抽取器向CrawlDB索取url调用的方法,需要传入一个MAX返回值.
+
 # 索引流程 #
 
 本项目提供两种索引方式,可在抓取的时候同时进行分布式索引,也可等抓取结束后通过生成的Json格式的数据文件索引.
@@ -92,7 +96,5 @@ DistributedCrawler
 
 # 下一步的工作 #
 
-- 利用Redis建立一个像Nutch一样的CrawlDB,通过维护CrawlDB来实现分布式的抓取和任务调度.
 - 搭建一个分布式的Solr服务器集群
-- 通过Solr实现分布式的索引和搜索服务
 

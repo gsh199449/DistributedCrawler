@@ -10,13 +10,15 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gs.dao.PageDAO;
 import com.gs.dao.impl.PageDAOHBaseImpl;
 import com.gs.model.PagePOJO;
 
 public class SolrSearcher {
-	
+	private static final Logger LOG = LoggerFactory.getLogger(SolrSearcher.class);
 	/**
 	 * @author GS
 	 * @param queryString 查询字符串

@@ -1,6 +1,8 @@
 package com.gs.index.solr;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -11,6 +13,10 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.junit.Test;
+
+import com.gs.indexer.solr.SolrIndex;
+import com.gs.indexer.solr.SolrSearcher;
+import com.gs.model.PagePOJO;
 
 public class TestSolr {
 
@@ -42,6 +48,18 @@ public class TestSolr {
 		    System.out.println("title: " + doc.getFieldValue("title"));
 		    System.out.println("cat: "+doc.getFieldValue("cat"));
 		   }
+	}
+	
+	@Test
+	public void testIndex() throws SolrServerException, IOException{
+		Set<PagePOJO> set = new HashSet<PagePOJO>();
+		set.add(new PagePOJO("http://news.qq.com",1,"哈哈哈","hhh"));
+		SolrIndex.index(set, "http://localhost:8888/solr");
+	}
+	
+	@Test
+	public void testSearch2() throws SolrServerException{
+		System.out.println(SolrSearcher.search("哈", "http://localhost:8888/solr"));
 	}
 
 }

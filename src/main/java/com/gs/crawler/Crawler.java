@@ -1,13 +1,16 @@
 package com.gs.crawler;
 
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.log4j.Logger;
 
-import com.gs.extractor.ContentExtractor;
-import com.gs.extractor.LinkExtractor;
-import com.gs.extractor.TitleExtractor;
+import com.gs.crawlDB.CrawlDB;
 import com.gs.extractor.impl.DefaultContentExtractor;
 import com.gs.extractor.impl.DefaultLinkExtractor;
 import com.gs.extractor.impl.DefaultTitleExtractor;
@@ -24,114 +27,94 @@ import com.gs.extractor.impl.WangYiWapNewsTitleExtractor;
 import com.gs.model.PagePOJO;
 import com.gs.utils.URL;
 
-
-/**
- * @author gaoshen
- */
 public class Crawler {
-	private int deepth;
-	/**
-	 * 此Crawler对应ID，也就是qq文件中对应连接的偏移量
-	 */
 	private String id;
-
-	private Logger logger = Logger.getLogger(this.getClass());
-
-	/**
-	 * 抓取队列
-	 */
-	public LinkedList<URL> queue = new LinkedList<URL>();
-
 	private int topN;
-	private ContentExtractor contentExtractor;
-	private LinkExtractor linkExtractor;
-	private TitleExtractor titleExtractor;
+	private int deepth;
 	private String seed;
+	public LinkedList<URL> queue = new LinkedList<URL>();
+	private Logger logger = Logger.getLogger(this.getClass());
+	private CrawlDB db;
+	private Context context;
+	private static final int maxGenerate = 20;
 
-	/**
-	 * @param id
-	 * @param newsCenter
-	 * @param topN
-	 * @param deepth
-	 */
-	public Crawler(String id, String seed,
-			int topN, int deepth) {
+	public Crawler(String id, String seed, int topN, int deepth, CrawlDB db,
+			Context context) {
 		this.id = id;
 		this.topN = topN;
 		this.deepth = deepth;
 		this.seed = seed;
-		switch (NewsCenterMatcher.match(seed)) {
-		case Tencent:
-			this.contentExtractor = new TencentNewsContentExtractor();
-			this.linkExtractor = new TencentNewsLinkExtractor(deepth - 1, topN);
-			this.titleExtractor = new TecentNewsTitleExtractor();
-			break;
-		case Sina:
-			this.contentExtractor = new SinaNewsContentExtractor();
-			this.linkExtractor = new SinaNewsLinkExtractor(deepth - 1, topN);
-			this.titleExtractor = new SinaNewsTitleExtractor();
-			break;
-		case WangYiWap:
-			this.contentExtractor = new WangYiWapNewsContentExtractor();
-			this.linkExtractor = new WangYiWapNewsLinkExtractor(deepth - 1, topN);
-			this.titleExtractor = new WangYiWapNewsTitleExtractor();
-			break;
-		case Unknow:
-			this.contentExtractor = new DefaultContentExtractor();
-			this.linkExtractor = new DefaultLinkExtractor(deepth - 1, topN);
-			this.titleExtractor = new DefaultTitleExtractor();
-			break;
-		default:
-			break;
-		}
+		this.db = db;
+		this.context = context;
 	}
 
-	/**
-	 * @param u
-	 *            添加URL到此Crawler的抓取队列中
-	 */
-	public synchronized void addURL(URL u) {
-		queue.add(u);
-	}
-
-	/**
-	 * @param seeds
-	 *            需要抓取的连接
-	 * @return 返回抓取的储存json的LinkedList
-	 */
-	public List<String> start() {
-		LinkedList<String> resultList = new LinkedList<String>();// 储存结果的List
-		queue.add(new URL(seed, 1));// 将种子装入带抓取的队列
-		int id = 0;// 每个页面的子ID号.
-		Redis r;
-		while (!queue.isEmpty()) {
-			r = Redis.getInstance();// Redis为单例模式
-			URL u = queue.remove();// 从队列里面拿出一个URL
-			if (r.hasFetched(u)) {
-				continue;
+	public Set<PagePOJO> start() throws IOException, InterruptedException {
+		Set<PagePOJO> indexSet = new HashSet<PagePOJO>();
+		int counter = 0;//当前的Crawler的计数器
+		queue.add(new URL(seed,0));
+		while (!db.isEmpty() && !queue.isEmpty()) {
+			queue.addAll(db.generate(maxGenerate));
+			Set<URL> toCrawl = new HashSet<URL>();//本次从DB里索取的所有链接的子连接
+			while (!queue.isEmpty()) {
+				URL u = queue.remove();// 从队列里面拿出一个URL
+				String html = HTMLDownloader.down(u);// 下载html
+				if (html == null || html.equals(""))// 判断html是否为空
+					continue;
+				String content = null;
+				String title = "";
+				switch (NewsCenterMatcher.match(u.url)) {
+				case Tencent:
+					toCrawl.addAll(new TencentNewsLinkExtractor(deepth - 1,
+							topN).extractFromHtml(html, u.level));
+					content = new TencentNewsContentExtractor()
+							.extractFromHtml(html);
+					title = new TecentNewsTitleExtractor()
+							.extractFromHtml(html);
+					break;
+				case Sina:
+					toCrawl.addAll((new SinaNewsLinkExtractor(deepth - 1, topN)
+							.extractFromHtml(html, u.level)));
+					content = new SinaNewsContentExtractor()
+							.extractFromHtml(html);
+					title = new SinaNewsTitleExtractor().extractFromHtml(html);
+					break;
+				case WangYiWap:
+					toCrawl.addAll(new WangYiWapNewsLinkExtractor(deepth - 1,
+							topN).extractFromHtml(html, u.level));
+					content = new WangYiWapNewsContentExtractor()
+							.extractFromHtml(html);
+					title = new WangYiWapNewsTitleExtractor()
+							.extractFromHtml(html);
+					break;
+				case Unknow:
+					toCrawl.addAll(new DefaultLinkExtractor(deepth - 1, topN)
+							.extractFromHtml(html, u.level));
+					content = new DefaultContentExtractor()
+							.extractFromHtml(html);
+					title = new DefaultTitleExtractor().extractFromHtml(html);
+					break;
+				default:
+					break;
+				}
+				if (content == null) {//如果内容为空,跳过
+					continue;
+				}
+				PagePOJO pojo = new PagePOJO();
+				pojo.setId(Integer.parseInt(this.id + counter++));// 设置pageid
+				pojo.setUrl(u.url);
+				pojo.setContent(content);
+				pojo.setTitle(title);
+				indexSet.add(pojo);
+				String json = pojo.toJson();
+				if (!json.equals("")) {
+					context.write(NullWritable.get(), new Text(pojo.toJson()
+							+ "\r"));// 将结果写入上下文当中
+				}
+				logger.info("Queue Size : " + queue.size() + "Level : "
+						+ u.level + "URL : " + u.url);// 打印当前Queue状态
 			}
-			r.add(u.url,u.level);// 向Redis里添加URL
-			String html = HTMLDownloader.down(u);// 下载html
-			if (html == null || html.equals(""))// 判断html是否为空
-				continue;
-			for (URL url : linkExtractor.extractFromHtml(html, u.level)) {// 提取本页面的连接
-				if (r.hasFetched(url))// 通过Redis判断是否已经抓取
-					continue;// 若已经抓取则不再向待抓取队列中添加
-				addURL(url);// 添加到Crawler的队列中
-			}
-			String content = contentExtractor.extractFromHtml(html);// 抽取本页面的内容
-			if (content == null || content.equals(""))// 判断内容是否为空,即是否为新闻内容页面
-				continue;
-			PagePOJO pojo = new PagePOJO();
-			pojo.setId(Integer.parseInt(this.id + id++));// 设置pageid
-			pojo.setUrl(u.url);
-			pojo.setContent(content);
-			pojo.setTitle(titleExtractor.extractFromHtml(html));
-			resultList.add(pojo.toJson());// 添加到结果List中
-			pojo = null;// 置空pojo
-			logger.info("Queue Size : " + queue.size() + "Level : " + u.level
-					+ "URL : " + u.url);// 打印当前Queue状态
+			db.inject(toCrawl);
 		}
-		return resultList;
+		return indexSet;
 	}
 }

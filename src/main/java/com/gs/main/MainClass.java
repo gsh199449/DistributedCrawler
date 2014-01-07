@@ -13,6 +13,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gs.crawlDB.CrawlDB;
 import com.gs.crawler.Crawler;
@@ -37,6 +39,7 @@ public class MainClass {
 	private static final int crawlDBToCrawlDB = 0;//CrawlDB的待抓取的数据库编号
 	private static final int crawlDBCrawledDB = 1;//CrawlDB的已抓取的数据库编号
 	private static final String SolrURL = "http://localhost:8888/solr";//Solr服务器URL
+	private static final Logger LOG = LoggerFactory.getLogger(MainClass.class);
 
 	/**
 	 * Mapper类
@@ -53,6 +56,7 @@ public class MainClass {
 					depth, db, context);// 以Input文件的行偏移量作为crawler的id
 			try {
 				SolrIndex.index(c.start(), SolrURL);
+				LOG.info("Index Finished!");
 			} catch (SolrServerException e) {
 				e.printStackTrace();
 			}
@@ -62,12 +66,17 @@ public class MainClass {
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
 		FileSystem fs = FileSystem.get(conf);
-		if (fs.exists(new Path(outputPath))) {// 如果输出路径存在的话，删除他。
+		/*if (fs.exists(new Path(outputPath))) {// 如果输出路径存在的话，删除他。
 			fs.delete(new Path(outputPath), true);
 		}
-		ExternalJARAdder adder = new ExternalJARAdder(fs, conf);
+*/		ExternalJARAdder adder = new ExternalJARAdder(fs, conf);
 		adder.add(rootPath + "libs/gson-2.2.4.jar");
 		adder.add(rootPath + "libs/solr-solrj-4.0.0.jar");
+		adder.add(rootPath + "libs/commons-dbcp-1.4.jar");
+		adder.add(rootPath + "libs/commons-pool-1.5.4.jar");
+		adder.add(rootPath + "libs/httpclient-4.1.3.jar");
+		adder.add(rootPath + "libs/httpcore-4.1.4.jar");
+		adder.add(rootPath + "libs/httpmime-4.1.3.jar");
 		Job job = new Job(conf, jobName);
 		job.setJarByClass(MainClass.class);
 		job.setMapperClass(CrawlMapper.class);

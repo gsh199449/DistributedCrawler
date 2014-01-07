@@ -5,26 +5,29 @@ import com.gs.Classifier.ClassConditionalProbability;
 import com.gs.Classifier.PriorProbability;
 import com.gs.Classifier.TrainingDataManager;
 import com.gs.Classifier.StopWordsHandler;
+import com.gs.crawler.Crawler;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
-* ÆÓËØ±´Ò¶Ë¹·ÖÀàÆ÷
+* ï¿½ï¿½ï¿½Ø±ï¿½Ò¶Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 */
 public class BayesClassifier 
 {
-	private Logger logger = Logger.getLogger(this.getClass());
-	private static TrainingDataManager tdm;//ÑµÁ·¼¯¹ÜÀíÆ÷
-	//private String trainnigDataPath;//ÑµÁ·¼¯Â·¾¶
+	private static final Logger LOG = LoggerFactory.getLogger(BayesClassifier.class);
+	private static TrainingDataManager tdm;//Ñµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//private String trainnigDataPath;//Ñµï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
 	private static double zoomFactor = 65.0f;
 	private static BayesClassifier bayesClassifier = new BayesClassifier();
 	/**
-	* Ä¬ÈÏµÄ¹¹ÔìÆ÷£¬³õÊ¼»¯ÑµÁ·¼¯
+	* Ä¬ï¿½ÏµÄ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Ñµï¿½ï¿½ï¿½ï¿½
 	*/
 	private BayesClassifier() 
 	{
@@ -32,30 +35,30 @@ public class BayesClassifier
 	}
 
 	/**
-	* ¼ÆËã¸ø¶¨µÄÎÄ±¾ÊôĞÔÏòÁ¿XÔÚ¸ø¶¨µÄ·ÖÀàCjÖĞµÄÀàÌõ¼ş¸ÅÂÊ
-	* <code>ClassConditionalProbability</code>Á¬³ËÖµ
-	* @param X ¸ø¶¨µÄÎÄ±¾ÊôĞÔÏòÁ¿
-	* @param Cj ¸ø¶¨µÄÀà±ğ
-	* @return ·ÖÀàÌõ¼ş¸ÅÂÊÁ¬³ËÖµ£¬¼´<br>
+	* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½Ú¸ï¿½Ä·ï¿½ï¿½ï¿½Cjï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	* <code>ClassConditionalProbability</code>ï¿½ï¿½ï¿½ï¿½Öµ
+	* @param X ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	* @param Cj ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	* @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½<br>
 	*/
 	float calcProd(String[] X, String Cj) 
 	{
 		float ret = 1.0F;
-		// ÀàÌõ¼ş¸ÅÂÊÁ¬³Ë
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		for (int i = 0; i <X.length; i++)
 		{
 			String Xi = X[i];
-			//ÒòÎª½á¹û¹ıĞ¡£¬Òò´ËÔÚÁ¬³ËÖ®Ç°·Å´ó10±¶£¬Õâ¶Ô×îÖÕ½á¹û²¢ÎŞÓ°Ïì£¬ÒòÎªÎÒÃÇÖ»ÊÇ±È½Ï¸ÅÂÊ´óĞ¡¶øÒÑ
+			//ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ğ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½Å´ï¿½10ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ì£¬ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ç±È½Ï¸ï¿½ï¿½Ê´ï¿½Ğ¡ï¿½ï¿½ï¿½ï¿½
 			ret *=ClassConditionalProbability.calculatePxc(Xi, Cj)*zoomFactor;
 		}
-		// ÔÙ³ËÒÔÏÈÑé¸ÅÂÊ
+		// ï¿½Ù³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		ret *= PriorProbability.calculatePc(Cj);
 		return ret;
 	}
 	/**
-	* È¥µôÍ£ÓÃ´Ê
-	* @param text ¸ø¶¨µÄÎÄ±¾
-	* @return È¥Í£ÓÃ´Êºó½á¹û
+	* È¥ï¿½ï¿½Í£ï¿½Ã´ï¿½
+	* @param text ï¿½ï¿½ï¿½ï¿½Ä±ï¿½
+	* @return È¥Í£ï¿½Ã´Êºï¿½ï¿½ï¿½
 	*/
 	public String[] DropStopWords(String[] oldWords)
 	{
@@ -63,7 +66,7 @@ public class BayesClassifier
 		for(int i=0;i<oldWords.length;++i)
 		{
 			if(StopWordsHandler.IsStopWord(oldWords[i])==false)
-			{//²»ÊÇÍ£ÓÃ´Ê
+			{//ï¿½ï¿½ï¿½ï¿½Í£ï¿½Ã´ï¿½
 				v1.add(oldWords[i]);
 			}
 		}
@@ -72,33 +75,33 @@ public class BayesClassifier
 		return newWords;
 	}
 	/**
-	* ¶Ô¸ø¶¨µÄÎÄ±¾½øĞĞ·ÖÀà
-	* @param text ¸ø¶¨µÄÎÄ±¾
-	* @return ·ÖÀà½á¹û
+	* ï¿½Ô¸ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½Ğ·ï¿½ï¿½ï¿½
+	* @param text ï¿½ï¿½ï¿½ï¿½Ä±ï¿½
+	* @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	*/
 	public String classify(String text) 
 	{
 		String[] terms = null;
-		terms= ChineseSpliter.split(text, " ").split(" ");//ÖĞÎÄ·Ö´Ê´¦Àí(·Ö´Êºó½á¹û¿ÉÄÜ»¹°üº¬ÓĞÍ£ÓÃ´Ê£©
-		terms = DropStopWords(terms);//È¥µôÍ£ÓÃ´Ê£¬ÒÔÃâÓ°Ïì·ÖÀà
+		terms= ChineseSpliter.split(text, " ").split(" ");//ï¿½ï¿½ï¿½Ä·Ö´Ê´ï¿½ï¿½ï¿½(ï¿½Ö´Êºï¿½ï¿½ï¿½ï¿½ï¿½Ü»ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½Ã´Ê£ï¿½
+		terms = DropStopWords(terms);//È¥ï¿½ï¿½Í£ï¿½Ã´Ê£ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½ï¿½
 		
-		String[] Classes = tdm.getTraningClassifications();//·ÖÀà
+		String[] Classes = tdm.getTraningClassifications();//ï¿½ï¿½ï¿½ï¿½
 		float probility = 0.0F;
-		List<ClassifyResult> crs = new ArrayList<ClassifyResult>();//·ÖÀà½á¹û
-		logger.info("classifying"+text.substring(0, 50));
+		List<ClassifyResult> crs = new ArrayList<ClassifyResult>();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		LOG.info("classifying"+text.substring(0, 50));
 		for (int i = 0; i <Classes.length; i++) 
 		{
-			String Ci = Classes[i];//µÚi¸ö·ÖÀà
-			probility = calcProd(terms, Ci);//¼ÆËã¸ø¶¨µÄÎÄ±¾ÊôĞÔÏòÁ¿termsÔÚ¸ø¶¨µÄ·ÖÀàCiÖĞµÄ·ÖÀàÌõ¼ş¸ÅÂÊ
-			//±£´æ·ÖÀà½á¹û
+			String Ci = Classes[i];//ï¿½ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			probility = calcProd(terms, Ci);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½termsï¿½Ú¸ï¿½Ä·ï¿½ï¿½ï¿½Ciï¿½ĞµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			ClassifyResult cr = new ClassifyResult();
-			cr.classification = Ci;//·ÖÀà
-			cr.probility = probility;//¹Ø¼ü×ÖÔÚ·ÖÀàµÄÌõ¼ş¸ÅÂÊ
+			cr.classification = Ci;//ï¿½ï¿½ï¿½ï¿½
+			cr.probility = probility;//ï¿½Ø¼ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			//System.out.println("In process....");
-			logger.debug(Ci + "£º" + probility);
+			LOG.debug(Ci + "ï¿½ï¿½" + probility);
 			crs.add(cr);
 		}
-		//¶Ô×îºó¸ÅÂÊ½á¹û½øĞĞÅÅĞò
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		java.util.Collections.sort(crs,new Comparator<ClassifyResult>() 
 		{
 			public int compare(final ClassifyResult o1,final ClassifyResult o2) 
@@ -116,16 +119,16 @@ public class BayesClassifier
 				}
 			}
 		});
-		//·µ»Ø¸ÅÂÊ×î´óµÄ·ÖÀà
+		//ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½
 		return crs.get(0).classification;
 	}
 	
 	public static void main(String[] args)
 	{
-		String text = "º«¹ú¡¶³¯ÏÊÈÕ±¨¡·16ÈÕ±¨µÀ³Æ£¬º«¹ú¹ú·À²¿¸Ä±äËµ·¨ÊÇ¿¼ÂÇµ½¼ÓÈëMDÏµÍ³µÄÕùÒé¡£SM-3µ¼µ¯¿ÉÒÔÔÚ·¢Éú½ô¼±Çé¿öÊ±£¬¶ÔÖĞ¹ú·¢ÉäµÄÔ¶³Ìµ¼µ¯½øÈëÌ«¿Õ½×¶ÎÔÚ¶«º£ºÍÎ÷º£ÉÏÊµÊ©À¹½Ø£¬Òò´Ë»á´Ì¼¤ÖĞ¹ú¡£Ò²ÓĞÈË³Æ£¬ÈøµÂÏµÍ³µÄºËĞÄÉè±¸AN/TPY-2µØÃæX-bandÀ×´ï¿ÉÄÜ»áÑÏÖØ´Ì¼¤ÖĞ¹ú¡£ÕâÖÖÀ×´ïµÄÌ½²â¾àÀë´ï1000¹«ÀïÒÔÉÏ£¬Èç¹û²¿ÊğÔÚº«¹ú£¬ÓÈÆäÊÇÎ÷º£µØÇø£¬¾ÍÄÜÌáÔçÌ½²âµ½ÖĞ¹úÓÃÓÚÍşÉåÃÀ¹úµÄÕ½ÂÔÎäÆ÷¡ª¡ªÖŞ¼Êµ¯µÀµ¼µ¯ºÍÇ±Éäµ¯µÀµ¼µ¯µÄ·¢Éä¶¯Ïò¡£¾İÏ¤£¬ÃÀ¹úÈ¥ÄêÔøÍ¨¹ı·ÇÕıÊ½ÇşµÀ½¨Òéº«¹úÕş¸®ÔÚ°×ôáµº²¿ÊğX-bandÀ×´ï£¬µ«º«¹úÕş¸®µ£ĞÄÖĞ¹ú¿¹ÒéÓèÒÔ¾Ü¾ø¡£";
-		BayesClassifier classifier = new BayesClassifier();//¹¹ÔìBayes·ÖÀàÆ÷
-		String result = classifier.classify(text);//½øĞĞ·ÖÀà
-		System.out.println("´ËÏîÊôÓÚ["+result+"]");
+		String text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ±ï¿½ï¿½ï¿½16ï¿½Õ±ï¿½ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½Ëµï¿½ï¿½ï¿½Ç¿ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½MDÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½é¡£SM-3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¹ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì«ï¿½Õ½×¶ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÊµÊ©ï¿½ï¿½ï¿½Ø£ï¿½ï¿½ï¿½Ë»ï¿½Ì¼ï¿½ï¿½Ğ¹ï¿½Ò²ï¿½ï¿½ï¿½Ë³Æ£ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½Äºï¿½ï¿½ï¿½ï¿½è±¸AN/TPY-2ï¿½ï¿½ï¿½ï¿½X-bandï¿½×´ï¿½ï¿½ï¿½Ü»ï¿½ï¿½ï¿½ï¿½Ø´Ì¼ï¿½ï¿½Ğ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1000ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½âµ½ï¿½Ğ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ş¼Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç±ï¿½äµ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ä¶¯ï¿½ò¡£¾ï¿½Ï¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½éº«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ï¿½áµºï¿½ï¿½ï¿½ï¿½X-bandï¿½×´ï£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¾Ü¾ï¿½";
+		BayesClassifier classifier = new BayesClassifier();//ï¿½ï¿½ï¿½ï¿½Bayesï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		String result = classifier.classify(text);//ï¿½ï¿½ï¿½Ğ·ï¿½ï¿½ï¿½
+		System.out.println("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½["+result+"]");
 	}
 	
 

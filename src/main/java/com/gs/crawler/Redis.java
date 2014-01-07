@@ -1,13 +1,14 @@
 package com.gs.crawler;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gs.utils.URL;
 
 import redis.clients.jedis.Jedis;
 @Deprecated
 public class Redis {
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final Logger LOG = LoggerFactory.getLogger(Crawler.class);
 	private static Jedis jj;
 	private final static Redis INSTANCE = new Redis();
 
@@ -15,7 +16,7 @@ public class Redis {
 		try {
 			jj = new Jedis("localhost");
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			LOG.error(e.getMessage());
 		}
 	}
 

@@ -5,8 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.gs.crawler.Crawler;
 import com.gs.dao.PageDAO;
 import com.gs.model.PagePOJO;
 
@@ -16,7 +18,7 @@ import com.gs.model.PagePOJO;
  * @author GS
  */
 public class PageDAOMysqlImpl implements PageDAO {
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final Logger LOG = LoggerFactory.getLogger(PageDAOMysqlImpl.class);
 	private Connection connection;
 
 	public PageDAOMysqlImpl() {
@@ -36,7 +38,7 @@ public class PageDAOMysqlImpl implements PageDAO {
 				return rs.getInt("count(*)") == 0 ? false : true;
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			LOG.error(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			try {
@@ -62,7 +64,7 @@ public class PageDAOMysqlImpl implements PageDAO {
 			stmt.executeUpdate(sql);
 			stmt.close();
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			LOG.error(e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -81,7 +83,7 @@ public class PageDAOMysqlImpl implements PageDAO {
 			pojo.setId(id);
 			pojo.setUrl(rs.getString("url"));
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			LOG.error(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			try {

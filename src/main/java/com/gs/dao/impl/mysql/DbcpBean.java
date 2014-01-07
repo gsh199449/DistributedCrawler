@@ -8,9 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.sql.DataSource;
+
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.gs.crawler.Crawler;
 
 /**
  * @author gaoshen
@@ -21,7 +26,7 @@ import org.apache.log4j.Logger;
  *         方法来完成，可以在通过调用带参数的构造函数完成调用，可以在其它类中调用，也可以在本类中加一个static{}来完成；
  */
 public final class DbcpBean implements Closeable{
-	private static Logger logger = Logger.getLogger(DbcpBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DbcpBean.class);
 	private static DbcpBean dbcpBean = null;
 
 	/** 数据源,static */
@@ -83,14 +88,14 @@ public final class DbcpBean implements Closeable{
 		ds.setMaxIdle(maxIdle);
 		ds.setMaxWait(maxWait);
 		DS = ds;
-		logger.info("数据源初始化完成");
+		LOG.info("数据源初始化完成");
 	}
 
 	/** 关闭数据源 */
 	protected static void shutdownDataSource() throws SQLException {
 		BasicDataSource bds = (BasicDataSource) DS;
 		bds.close();
-		logger.info("数据源正常关闭");
+		LOG.info("数据源正常关闭");
 	}
 
 	/** 默认的构造函数 */
@@ -115,7 +120,7 @@ public final class DbcpBean implements Closeable{
 		try {
 			return DS.getConnection();
 		} catch (SQLException e) {
-			logger.error("获得连接出错！");
+			LOG.error("获得连接出错！");
 			e.printStackTrace();
 			return null;
 		}
@@ -132,7 +137,7 @@ public final class DbcpBean implements Closeable{
 		try {
 			shutdownDataSource();
 		} catch (SQLException e) {
-			logger.error("数据源关闭出现错误"+e.getMessage());
+			LOG.error("数据源关闭出现错误"+e.getMessage());
 			e.printStackTrace();
 		}
 	}

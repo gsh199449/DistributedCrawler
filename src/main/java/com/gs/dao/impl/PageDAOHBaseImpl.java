@@ -9,23 +9,29 @@ import com.gs.model.PagePOJO;
  * @author GS
  */
 public class PageDAOHBaseImpl implements PageDAO {
-	
+
 	@Override
-	public PagePOJO loadPage(String id) {
+	public PagePOJO loadPage(int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean exist(String id) {
+	public boolean exist(int id) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void delete(String id) {
+	public void delete(int id) {
 		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public void save(PagePOJO pojo) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

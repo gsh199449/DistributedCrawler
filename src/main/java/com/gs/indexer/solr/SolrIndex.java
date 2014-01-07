@@ -38,5 +38,6 @@ public class SolrIndex {
 		}
 		//server.add(result);
 		server.commit();
+		LOG.info("Index Finished!");
 	}
 }

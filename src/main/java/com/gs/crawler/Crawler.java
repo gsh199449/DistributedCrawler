@@ -50,11 +50,14 @@ public class Crawler {
 	}
 
 	public Set<PagePOJO> start() throws IOException, InterruptedException {
+		long startTime = System.currentTimeMillis();
+		LOG.info("Crawler start");
 		Set<PagePOJO> indexSet = new HashSet<PagePOJO>();
 		int counter = 0;// 当前的Crawler的计数器
 		queue.add(new URL(seed, 0));
 		while (!db.isEmpty() || !queue.isEmpty()) {
 			queue.addAll(db.generate(maxGenerate));
+			LOG.info("Generate URLs. Queue size : "+queue.size());
 			Set<URL> toCrawl = new HashSet<URL>();// 本次从DB里索取的所有链接的子连接
 			while (!queue.isEmpty()) {
 				URL u = queue.remove();// 从队列里面拿出一个URL
@@ -98,6 +101,7 @@ public class Crawler {
 					break;
 				}
 				if (content == null || content.trim().equals("")) {// 如果内容为空,跳过
+					LOG.info("Blank Content . Skip.");
 					continue;
 				}
 				PagePOJO pojo = new PagePOJO();
@@ -106,15 +110,14 @@ public class Crawler {
 				pojo.setContent(content);
 				pojo.setTitle(title);
 				indexSet.add(pojo);
-				String json = pojo.toJson();
 				context.write(NullWritable.get(),
 						new Text(pojo.toJson() + "\r"));// 将结果写入上下文当中
-				LOG.info("Queue Size : " + queue.size() + "Level : " + u.level
-						+ "URL : " + u.url);// 打印当前Queue状态
+				LOG.info("Download Page . Level : " + u.level + "URL : " + u.url);// 打印当前Queue状态
 			}
 			db.inject(toCrawl);
+			LOG.info("Inject URLs . Number : " + toCrawl.size());
 		}
-		LOG.info("Finish");
+		LOG.info("Crawler Finish . Use Time : "+(System.currentTimeMillis()-startTime));
 		return indexSet;
 	}
 }

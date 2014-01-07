@@ -52,6 +52,7 @@ public class PageDAOMysqlImpl implements PageDAO {
 
 	@Override
 	public void save(PagePOJO pojo) {
+		LOG.info("Save PagePOJO : "+pojo);
 		Statement stmt = null;
 		try {
 			String sql = "INSERT INTO `page`.`page` (`title`, `url`, `content`, `id`) VALUES ('"
@@ -89,6 +90,7 @@ public class PageDAOMysqlImpl implements PageDAO {
 			try {
 				stmt.close();
 			} catch (SQLException e) {
+				LOG.error(e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -98,7 +100,6 @@ public class PageDAOMysqlImpl implements PageDAO {
 	@Override
 	public void delete(int id) {
 		// TODO Auto-generated method stub
-
 	}
 
 }

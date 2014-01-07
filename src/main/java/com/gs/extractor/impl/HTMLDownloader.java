@@ -6,13 +6,17 @@ import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.gs.crawler.Crawler;
 import com.gs.utils.URL;
 
 public class HTMLDownloader {
-	private static Logger logger = Logger.getLogger(HTMLDownloader.class);
-	public static String down(URL u){
+	private static final Logger LOG = LoggerFactory
+			.getLogger(HTMLDownloader.class);
+
+	public static String down(URL u) {
 		String s = null;
 		HttpClient hc = new HttpClient();
 		GetMethod get;
@@ -23,14 +27,11 @@ public class HTMLDownloader {
 			s = get.getResponseBodyAsString();
 			get.releaseConnection();
 		} catch (ConnectTimeoutException e) {
-			logger.warn(u.level+"连接超时");
+			LOG.warn(u.level + "连接超时");
 		} catch (HttpException e) {
-			logger.warn(u.url+"Http错误");
+			LOG.warn(u.url + "Http错误");
 		} catch (IOException e) {
-			logger.error("IO错误");
-		}
-		if(s == null || s.equals("")){
-			return s;
+			LOG.error(u.url + "IO错误");
 		}
 		return s;
 	}

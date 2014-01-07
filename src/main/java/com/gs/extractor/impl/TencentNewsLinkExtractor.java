@@ -3,7 +3,9 @@
  */
 package com.gs.extractor.impl;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,8 +26,8 @@ public class TencentNewsLinkExtractor implements LinkExtractor {
 	}
 
 
-	public LinkedList<URL> extractFromHtml(String html, final int level) {
-		LinkedList<URL> s = new LinkedList<URL>();
+	public Set<URL> extractFromHtml(String html, final int level) {
+		Set<URL> s = new HashSet<URL>();
 		if (level >= deepth && deepth != 0){
 			return s;// 若已经超过抓取深度则不再提取
 		}

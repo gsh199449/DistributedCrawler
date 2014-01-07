@@ -8,7 +8,8 @@ import java.util.Set;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper.Context;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gs.crawlDB.CrawlDB;
 import com.gs.extractor.impl.DefaultContentExtractor;
@@ -33,7 +34,7 @@ public class Crawler {
 	private int deepth;
 	private String seed;
 	public LinkedList<URL> queue = new LinkedList<URL>();
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final Logger LOG = LoggerFactory.getLogger(Crawler.class);
 	private CrawlDB db;
 	private Context context;
 	private static final int maxGenerate = 20;
@@ -50,11 +51,11 @@ public class Crawler {
 
 	public Set<PagePOJO> start() throws IOException, InterruptedException {
 		Set<PagePOJO> indexSet = new HashSet<PagePOJO>();
-		int counter = 0;//当前的Crawler的计数器
-		queue.add(new URL(seed,0));
-		while (!db.isEmpty() && !queue.isEmpty()) {
+		int counter = 0;// 当前的Crawler的计数器
+		queue.add(new URL(seed, 0));
+		while (!db.isEmpty() || !queue.isEmpty()) {
 			queue.addAll(db.generate(maxGenerate));
-			Set<URL> toCrawl = new HashSet<URL>();//本次从DB里索取的所有链接的子连接
+			Set<URL> toCrawl = new HashSet<URL>();// 本次从DB里索取的所有链接的子连接
 			while (!queue.isEmpty()) {
 				URL u = queue.remove();// 从队列里面拿出一个URL
 				String html = HTMLDownloader.down(u);// 下载html
@@ -96,7 +97,7 @@ public class Crawler {
 				default:
 					break;
 				}
-				if (content == null) {//如果内容为空,跳过
+				if (content == null || content.trim().equals("")) {// 如果内容为空,跳过
 					continue;
 				}
 				PagePOJO pojo = new PagePOJO();
@@ -106,15 +107,14 @@ public class Crawler {
 				pojo.setTitle(title);
 				indexSet.add(pojo);
 				String json = pojo.toJson();
-				if (!json.equals("")) {
-					context.write(NullWritable.get(), new Text(pojo.toJson()
-							+ "\r"));// 将结果写入上下文当中
-				}
-				logger.info("Queue Size : " + queue.size() + "Level : "
-						+ u.level + "URL : " + u.url);// 打印当前Queue状态
+				context.write(NullWritable.get(),
+						new Text(pojo.toJson() + "\r"));// 将结果写入上下文当中
+				LOG.info("Queue Size : " + queue.size() + "Level : " + u.level
+						+ "URL : " + u.url);// 打印当前Queue状态
 			}
 			db.inject(toCrawl);
 		}
+		LOG.info("Finish");
 		return indexSet;
 	}
 }

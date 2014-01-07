@@ -7,7 +7,7 @@ DistributedCrawler
 
 # 使用方法 #
 
-1. 在com.gs.main.Test1中设置爬取时需要的各种参数.
+1. 在com.gs.main.MainClass中设置爬取时需要的各种参数.
 
 	```Java
 	private static final String rootPath = "hdfs://gs-pc:9000/home/test/";

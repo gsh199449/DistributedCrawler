@@ -29,7 +29,7 @@ import com.gs.utils.URL;
  * @author gaoshen
  */
 @Deprecated
-public class OldCrawler {//TODO:根据新的CrawlDB重写Crawler类
+public class OldCrawler {
 	private int deepth;
 	/**
 	 * 此Crawler对应ID，也就是qq文件中对应连接的偏移量

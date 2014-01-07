@@ -41,7 +41,7 @@
             <artifactId>lucene-core</artifactId>
             <version>3.5.0</version>
         </dependency>
-     <!-- <dependency>
+   <!--   <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>

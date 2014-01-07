@@ -27,7 +27,7 @@ public class TestSolr {
 		SolrInputDocument doc1 = new SolrInputDocument();
 		doc1.addField("id", "1");
 		doc1.addField("title", "习近平亲民广获赞誉 美媒称领导中共魅力攻势");
-		doc1.addField("cat", "最近一段时间，国家主席习近平排队吃包子、办公室发表新年贺词引起了广泛关注。人们发现，国家最高领导人吃的是寻常百姓饭，办公室里摆的也是家人照片。");
+		doc1.addField("content", "最近一段时间，国家主席习近平排队吃包子、办公室发表新年贺词引起了广泛关注。人们发现，国家最高领导人吃的是寻常百姓饭，办公室里摆的也是家人照片。");
 		server.add(doc1);
 		server.commit();
 	}
@@ -46,7 +46,7 @@ public class TestSolr {
 		   for (SolrDocument doc : docs) {
 		    System.out.println("id: " + doc.getFieldValue("id"));
 		    System.out.println("title: " + doc.getFieldValue("title"));
-		    System.out.println("cat: "+doc.getFieldValue("cat"));
+		    System.out.println("contect: "+doc.getFieldValue("content"));
 		   }
 	}
 	

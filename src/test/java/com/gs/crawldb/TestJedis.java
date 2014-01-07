@@ -9,7 +9,7 @@ import redis.clients.jedis.JedisPool;
 public class TestJedis {
 	@Test
 	public void test(){
-		JedisPool j = new JedisPool(new Config(),"localhost",6377,1000,"940409",1);
+		JedisPool j = new JedisPool(new Config(),"localhost",6377,1000,"940409",0);
 		System.out.println(j.getResource().get("aa"));
 		j.getResource().set("java", "haha");
 	}

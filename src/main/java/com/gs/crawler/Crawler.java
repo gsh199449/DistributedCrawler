@@ -57,7 +57,7 @@ public class Crawler {
 		queue.add(new URL(seed, 0));
 		while (!db.isEmpty() || !queue.isEmpty()) {
 			queue.addAll(db.generate(maxGenerate));
-			LOG.info("Generate URLs. Queue size : "+queue.size());
+			LOG.info("Generate URLs . Queue size : "+queue.size());
 			Set<URL> toCrawl = new HashSet<URL>();// 本次从DB里索取的所有链接的子连接
 			while (!queue.isEmpty()) {
 				URL u = queue.remove();// 从队列里面拿出一个URL
@@ -101,7 +101,7 @@ public class Crawler {
 					break;
 				}
 				if (content == null || content.trim().equals("")) {// 如果内容为空,跳过
-					LOG.info("Blank Content . Skip.");
+					LOG.info("Blank Content . Skip .");
 					continue;
 				}
 				PagePOJO pojo = new PagePOJO();
@@ -117,7 +117,7 @@ public class Crawler {
 			db.inject(toCrawl);
 			LOG.info("Inject URLs . Number : " + toCrawl.size());
 		}
-		LOG.info("Crawler Finish . Use Time : "+(System.currentTimeMillis()-startTime));
+		LOG.info("Crawler exit . Use Time : "+(System.currentTimeMillis()-startTime));
 		return indexSet;
 	}
 }

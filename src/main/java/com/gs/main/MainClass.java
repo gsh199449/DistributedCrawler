@@ -1,6 +1,8 @@
 package com.gs.main;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -22,7 +24,6 @@ import com.gs.indexer.solr.SolrIndex;
 
 /**
  * Crawler运行主类，包括Mapper和Main. 我们认为url.txt中的连接为0深度，所设置的deepth为页面level。
- * 
  * @author gaoshen
  */
 public class MainClass {
@@ -56,20 +57,24 @@ public class MainClass {
 					depth, db, context);// 以Input文件的行偏移量作为crawler的id
 			try {
 				SolrIndex.index(c.start(), SolrURL);
-				LOG.info("Index Finished!");
 			} catch (SolrServerException e) {
+				LOG.error(e.getMessage());
 				e.printStackTrace();
 			}
+			LOG.info("Map finish");
 		}
 	}
 
 	public static void main(String[] args) throws Exception {
+		long startTime = System.currentTimeMillis();
+		LOG.info("Job init "+jobName+" start time : "+new SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(new Date(startTime)));
 		Configuration conf = new Configuration();
 		FileSystem fs = FileSystem.get(conf);
-		/*if (fs.exists(new Path(outputPath))) {// 如果输出路径存在的话，删除他。
+		if (fs.exists(new Path(outputPath))) {// 如果输出路径存在的话，删除他。
+			LOG.info("Delete the output path" + outputPath);
 			fs.delete(new Path(outputPath), true);
 		}
-*/		ExternalJARAdder adder = new ExternalJARAdder(fs, conf);
+		ExternalJARAdder adder = new ExternalJARAdder(fs, conf);
 		adder.add(rootPath + "libs/gson-2.2.4.jar");
 		adder.add(rootPath + "libs/solr-solrj-4.0.0.jar");
 		adder.add(rootPath + "libs/commons-dbcp-1.4.jar");
@@ -85,6 +90,7 @@ public class MainClass {
 		FileInputFormat.addInputPath(job, new Path(dst));
 		FileOutputFormat.setOutputPath(job, new Path(outputPath));
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
+		LOG.info("Job finish . Use : "+(startTime-System.currentTimeMillis()));
 	}
 
 }

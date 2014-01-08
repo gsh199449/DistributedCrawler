@@ -16,6 +16,7 @@ import com.gs.model.PagePOJO;
 
 public class SolrIndex {
 	private static final Logger LOG = LoggerFactory.getLogger(SolrIndex.class);
+	
 	/**
 	 * @author GS
 	 * @param set 待索引的PagePOJO集合
@@ -25,6 +26,8 @@ public class SolrIndex {
 	 */
 	public static final void index(final Set<PagePOJO> set,
 			final String SERVER_URL) throws SolrServerException, IOException {
+		long startTime = System.currentTimeMillis();
+		LOG.info("Index Start .Solr server "+SERVER_URL+" . Index number : "+set.size());
 		SolrServer server = new HttpSolrServer(SERVER_URL);
 		//Set<SolrInputDocument> result = new HashSet<SolrInputDocument>();
 		for (PagePOJO pojo : set) {
@@ -38,6 +41,6 @@ public class SolrIndex {
 		}
 		//server.add(result);
 		server.commit();
-		LOG.info("Index Finished!");
+		LOG.info("Index Finished! Use Time :  "+(System.currentTimeMillis() - startTime)+" s");
 	}
 }

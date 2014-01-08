@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gs.crawlDB.CrawlDB;
+import com.gs.dao.PageDAO;
+import com.gs.dao.impl.hbase.PageDAOHBaseImpl;
 import com.gs.extractor.impl.DefaultContentExtractor;
 import com.gs.extractor.impl.DefaultLinkExtractor;
 import com.gs.extractor.impl.DefaultTitleExtractor;
@@ -51,6 +53,7 @@ public class Crawler {
 
 	public Set<PagePOJO> start() throws IOException, InterruptedException {
 		Set<PagePOJO> indexSet = new HashSet<PagePOJO>();
+		PageDAO dao = new PageDAOHBaseImpl("page");
 		int counter = 0;// 当前的Crawler的计数器
 		queue.add(new URL(seed, 0));
 		while (!db.isEmpty() || !queue.isEmpty()) {
@@ -113,6 +116,7 @@ public class Crawler {
 						+ "URL : " + u.url);// 打印当前Queue状态
 			}
 			db.inject(toCrawl);
+			dao.save(indexSet);
 		}
 		LOG.info("Finish");
 		return indexSet;

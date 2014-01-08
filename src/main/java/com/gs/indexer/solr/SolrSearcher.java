@@ -1,8 +1,10 @@
 package com.gs.indexer.solr;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -14,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gs.dao.PageDAO;
-import com.gs.dao.impl.PageDAOHBaseImpl;
+import com.gs.dao.impl.hbase.PageDAOHBaseImpl;
 import com.gs.model.PagePOJO;
 
 public class SolrSearcher {
@@ -28,7 +30,14 @@ public class SolrSearcher {
 	 */
 	public static final Set<PagePOJO> search(final String queryString,
 			final String serverurl) throws SolrServerException {
-		PageDAO dao = new PageDAOHBaseImpl();
+		PageDAO dao = null;
+		try {
+			dao = new PageDAOHBaseImpl("page");
+		} catch (ZooKeeperConnectionException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		SolrServer server = new HttpSolrServer(serverurl);
 		SolrQuery query = new SolrQuery(queryString);
 		query.setStart(0);
@@ -39,6 +48,11 @@ public class SolrSearcher {
 		for (SolrDocument doc : docs) {
 			int id = Integer.valueOf((String) doc.getFieldValue("id"));
 			result.add(dao.loadPage(id));
+		}
+		try {
+			dao.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return result;
 	}

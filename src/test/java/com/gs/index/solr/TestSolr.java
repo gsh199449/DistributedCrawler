@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -58,7 +59,7 @@ public class TestSolr {
 	}
 	
 	@Test
-	public void testSearch2() throws SolrServerException{
+	public void testSearch2() throws SolrServerException, ZooKeeperConnectionException, IOException{
 		System.out.println(SolrSearcher.search("哈", "http://localhost:8888/solr"));
 	}
 

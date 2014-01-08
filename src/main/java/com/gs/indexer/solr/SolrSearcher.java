@@ -1,8 +1,10 @@
 package com.gs.indexer.solr;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -14,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gs.dao.PageDAO;
-import com.gs.dao.impl.PageDAOHBaseImpl;
+import com.gs.dao.impl.hbase.PageDAOHBaseImpl;
 import com.gs.model.PagePOJO;
 
 public class SolrSearcher {
@@ -25,10 +27,12 @@ public class SolrSearcher {
 	 * @param serverurl Solr服务器的URL,例如:http://localhost:8983/solr/
 	 * @return 结果集
 	 * @throws SolrServerException
+	 * @throws IOException 
+	 * @throws ZooKeeperConnectionException 
 	 */
 	public static final Set<PagePOJO> search(final String queryString,
-			final String serverurl) throws SolrServerException {
-		PageDAO dao = new PageDAOHBaseImpl();
+			final String serverurl) throws SolrServerException, ZooKeeperConnectionException, IOException {
+		PageDAO dao = new PageDAOHBaseImpl("page");
 		SolrServer server = new HttpSolrServer(serverurl);
 		SolrQuery query = new SolrQuery(queryString);
 		query.setStart(0);

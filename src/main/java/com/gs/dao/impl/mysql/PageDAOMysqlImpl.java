@@ -1,9 +1,11 @@
 package com.gs.dao.impl.mysql;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +101,18 @@ public class PageDAOMysqlImpl implements PageDAO {
 	public void delete(int id) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void save(Set<PagePOJO> set) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void close() throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

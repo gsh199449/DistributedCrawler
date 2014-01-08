@@ -31,8 +31,15 @@ public class SolrSearcher {
 	 * @throws ZooKeeperConnectionException 
 	 */
 	public static final Set<PagePOJO> search(final String queryString,
-			final String serverurl) throws SolrServerException, ZooKeeperConnectionException, IOException {
-		PageDAO dao = new PageDAOHBaseImpl("page");
+			final String serverurl) throws SolrServerException {
+		PageDAO dao = null;
+		try {
+			dao = new PageDAOHBaseImpl("page");
+		} catch (ZooKeeperConnectionException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		SolrServer server = new HttpSolrServer(serverurl);
 		SolrQuery query = new SolrQuery(queryString);
 		query.setStart(0);
@@ -43,6 +50,11 @@ public class SolrSearcher {
 		for (SolrDocument doc : docs) {
 			int id = Integer.valueOf((String) doc.getFieldValue("id"));
 			result.add(dao.loadPage(id));
+		}
+		try {
+			dao.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return result;
 	}

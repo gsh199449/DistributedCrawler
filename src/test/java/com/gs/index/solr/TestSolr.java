@@ -37,7 +37,7 @@ public class TestSolr {
 	public void testSearch() throws SolrServerException{
 		String url = "http://localhost:8888/solr";
 		  SolrServer server = new HttpSolrServer(url);
-		  SolrQuery query = new SolrQuery("国家");
+		  SolrQuery query = new SolrQuery("火箭");
 		  query.setStart(0);
 		  query.setRows(100);
 		   QueryResponse response = server.query(query);
@@ -59,8 +59,10 @@ public class TestSolr {
 	}
 	
 	@Test
-	public void testSearch2() throws SolrServerException, ZooKeeperConnectionException, IOException{
-		System.out.println(SolrSearcher.search("哈", "http://localhost:8888/solr"));
+	public void testSearch2() throws SolrServerException{
+		for(PagePOJO pojo : SolrSearcher.search("习近平", "http://localhost:8888/solr")){
+			System.out.println(pojo);
+		}
 	}
 
 }

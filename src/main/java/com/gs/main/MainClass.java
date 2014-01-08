@@ -30,16 +30,16 @@ public class MainClass {
 	private static final String rootPath = "hdfs://gs-pc:9000/home/test/";
 	private static final String dst = rootPath + "qq.txt";// 首页的链接暂存地
 	private static final int depth = 3;// 深度
-	private static final int topN = 80;// 每页抓取的最大链接数
+	private static final int topN = 100;// 每页抓取的最大链接数
 	private static final String outputPath = rootPath + "output";// 最终结果的输出路径
 	private static final String jobName = "DistributeCrawler";// Job的名称
-	private static final String crawlDBHost = "localhost";//CrawlDB的IP
+	private static final String crawlDBHost = "gs-pc";//CrawlDB的IP
 	private static final int crawlDBPost = 6377;//CrawlDB的端口
 	private static final String crawlDBPassword = "940409";//CrawlDB的密码
 	private static final int crawlDBTimeout = 1000;//CrawlDB的连接超时时间
 	private static final int crawlDBToCrawlDB = 0;//CrawlDB的待抓取的数据库编号
 	private static final int crawlDBCrawledDB = 1;//CrawlDB的已抓取的数据库编号
-	private static final String SolrURL = "http://localhost:8888/solr";//Solr服务器URL
+	private static final String SolrURL = "http://gs-pc:8888/solr";//Solr服务器URL
 	private static final Logger LOG = LoggerFactory.getLogger(MainClass.class);
 
 	/**
@@ -82,6 +82,10 @@ public class MainClass {
 		adder.add(rootPath + "libs/httpclient-4.1.3.jar");
 		adder.add(rootPath + "libs/httpcore-4.1.4.jar");
 		adder.add(rootPath + "libs/httpmime-4.1.3.jar");
+		adder.add(rootPath + "libs/hbase-0.94.11.jar");
+		adder.add(rootPath + "libs/zookeeper-3.4.5.jar");
+		adder.add(rootPath + "libs/protobuf-java-2.4.0a.jar");
+		adder.add(rootPath + "libs/jedis-2.1.0.jar");
 		Job job = new Job(conf, jobName);
 		job.setJarByClass(MainClass.class);
 		job.setMapperClass(CrawlMapper.class);

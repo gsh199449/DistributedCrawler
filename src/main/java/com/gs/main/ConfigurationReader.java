@@ -1,6 +1,7 @@
 package com.gs.main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,11 +18,10 @@ public class ConfigurationReader {
 	public static Configuration parseJsonConf(String path) throws IOException {
 		ConfigurationBuilder builder = new ConfigurationBuilder();
 		Configuration conf = null;
-			conf = builder.getConfiguration();
+		conf = builder.getConfiguration();
 		try {
 			JsonFactory jfactory = new JsonFactory();
-			JsonParser jParser = jfactory.createJsonParser(new File(
-					path));
+			JsonParser jParser = jfactory.createJsonParser(new File(path));
 			while (jParser.nextToken() != JsonToken.END_OBJECT) {
 				String fieldname = jParser.getCurrentName();
 				if ("rootPath".equals(fieldname)) {
@@ -45,6 +45,12 @@ public class ConfigurationReader {
 				} else if ("crawlDBHost".equals(fieldname)) {
 					jParser.nextToken();
 					conf.addProperty("crawlDBHost", jParser.getText());
+				} else if ("hbaseTableName".equals(fieldname)) {
+					jParser.nextToken();
+					conf.addProperty("hbaseTableName", jParser.getText());
+				} else if ("libsPath".equals(fieldname)) {
+					jParser.nextToken();
+					conf.addProperty("libsPath", jParser.getText());
 				} else if ("crawlDBPort".equals(fieldname)) {
 					jParser.nextToken();
 					conf.addProperty("crawlDBPort", jParser.getIntValue());
@@ -81,5 +87,10 @@ public class ConfigurationReader {
 			e.printStackTrace();
 		}
 		return conf;
+	}
+
+	public static void main(String[] args) throws IOException {
+		System.out.println(parseJsonConf("/home/gaoshen/crawler.json")
+				.getString("libsPath"));
 	}
 }

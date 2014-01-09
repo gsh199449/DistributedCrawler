@@ -1,0 +1,29 @@
+{
+    "rootPath":"hdfs://gs-pc:9000/home/test/",
+    "seeds":"hdfs://gs-pc:9000/home/test/qq.txt",
+    "depth":3,
+    "topN":100,
+    "outputPath":"hdfs://gs-pc:9000/home/test/outputPath",
+    "jobName":"DistributeCrawler",
+    "crawlDBHost":"gs-pc",
+    "crawlDBPort":6377,
+    "crawlDBPassword":"940409",
+    "crawlDBTimeout":1000,
+    "crawlDBToCrawlDB":0,
+    "crawlDBCrawledDB":1,
+    "solrURL":"http://gs-pc:8888/solr",
+    "libsPath":"http://gs-pc:8888/solr/",
+    "jarsName":[
+        "gson-2.2.4.jar",
+        "solr-solrj-4.0.0.jar",
+        "commons-dbcp-1.4.jar",
+        "commons-pool-1.5.4.jar",
+        "httpclient-4.1.3.jar",
+        "httpcore-4.1.4.jar",
+        "httpmime-4.1.3.jar",
+        "hbase-0.94.11.jar",
+        "zookeeper-3.4.5.jar"
+        ,"protobuf-java-2.4.0a.jar"
+        ,"jedis-2.1.0.jar"
+    ]
+}

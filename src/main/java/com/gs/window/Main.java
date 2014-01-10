@@ -37,16 +37,21 @@ import javax.swing.plaf.ComboBoxUI;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.carrot2.core.ProcessingResult;
 
 import com.gs.indexer.Indexer;
 import com.gs.indexer.Hit;
 import com.gs.cluster.Cluster;
 import com.gs.indexer.Searcher;
+import com.gs.indexer.solr.SolrSearcher;
 import com.gs.model.PagePOJO;
 
 
+
+
 import java.awt.Font;
+
 import javax.swing.JComboBox;
 
 public class Main {
@@ -619,24 +624,28 @@ public class Main {
 					@Override
 					public void run() {
 						long start = System.currentTimeMillis();
-						Searcher s = new Searcher(txtDtestjson.getText(), txtDtestindex
+					/*	Searcher s = new Searcher(txtDtestjson.getText(), txtDtestindex
 								.getText());
 						LinkedList<Hit> list = s.search(textField.getText(),
 								checkBox_1.isSelected(),
-								Integer.parseInt(textField_3.getText()));
+								Integer.parseInt(textField_3.getText()));*/
 						String re = "";
-						for (Hit h : list) {
-							PagePOJO pojo = h.getPagePOJO();
-							re += pojo.title + "\n";
-							if (checkBox.isSelected()) {
-								re += pojo.content
-										+ "\n====================================\n";
+						
+						try {
+							for (PagePOJO pojo : SolrSearcher.search(textField.getText(), "http://localhost:8888/solr")) {
+								re += pojo.title + "\n";
+								if (checkBox.isSelected()) {
+									re += pojo.content
+											+ "\n====================================\n";
+								}
 							}
+						} catch (SolrServerException e) {
+							e.printStackTrace();
 						}
 						if (re.equals(""))
 							re = "找不到" + textField.getText();
 						textArea_1.setText(re);
-						if (checkBox_2.isSelected()) {
+						/*if (checkBox_2.isSelected()) {
 							List<PagePOJO> l = new LinkedList<PagePOJO>();
 							while (!list.isEmpty()) {
 								l.add(list.pop().getPagePOJO());
@@ -654,7 +663,7 @@ public class Main {
 							while (it.hasNext()) {
 								comboBox.addItem(it.next());
 							}
-						}
+						}*/
 						lblNewLabel_5.setText("本次搜索用时"
 								+ (System.currentTimeMillis() - start) + "毫秒");
 					}

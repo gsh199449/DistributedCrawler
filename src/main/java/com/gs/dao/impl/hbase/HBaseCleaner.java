@@ -11,10 +11,15 @@ public final class HBaseCleaner {
 		HBaseAdmin admin = new HBaseAdmin(HBasePool.getInstance().getConf());
 		admin.disableTable(tableName);
 		admin.deleteTable(tableName);
+		/*for(HTableDescriptor d : admin.listTables()){
+			System.out.println(d.getNameAsString());
+			for(HColumnDescriptor cd : d.getColumnFamilies()){
+				System.out.println("===="+cd.getNameAsString());
+			}
+		}*/
 		HTableDescriptor tableDescriptor = new HTableDescriptor(tableName);  
         tableDescriptor.addFamily(new HColumnDescriptor("content"));  
         tableDescriptor.addFamily(new HColumnDescriptor("title"));  
-        tableDescriptor.addFamily(new HColumnDescriptor("url"));  
 		admin.createTable(tableDescriptor);
 		admin.close();
 	}

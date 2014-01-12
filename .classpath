@@ -24,6 +24,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Carrot2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/opt/DistreburedCrawler-lib/IKAnalyzer2012.jar"/>
+	<classpathentry kind="lib" path="D:/Tools/IKAnalyzer2012/IKAnalyzer2012.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

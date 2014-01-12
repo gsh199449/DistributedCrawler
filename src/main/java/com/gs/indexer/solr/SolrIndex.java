@@ -33,9 +33,9 @@ public class SolrIndex {
 		for (PagePOJO pojo : set) {
 			SolrInputDocument doc;
 			doc = new SolrInputDocument();
-			doc.addField("id", pojo.getId());
 			doc.addField("title", pojo.getTitle());
 			doc.addField("content", pojo.getContent());
+			doc.addField("url", pojo.getUrl());
 			//result.add(doc);
 			server.add(doc);
 		}

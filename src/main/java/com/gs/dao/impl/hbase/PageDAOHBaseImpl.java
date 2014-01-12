@@ -29,21 +29,19 @@ public class PageDAOHBaseImpl implements PageDAO {
 	}
 
 	@Override
-	public PagePOJO loadPage(int id) {
+	public PagePOJO loadPage(String url) {
 		PagePOJO pojo = new PagePOJO();
 		try {
-			Get scan = new Get(String.valueOf(id).getBytes());// 设置ID号
+			Get scan = new Get(url.getBytes());// 设置ID号
 			org.apache.hadoop.hbase.client.Result r = table.get(scan);
 			for (org.apache.hadoop.hbase.KeyValue keyValue : r.raw()) {
 				if (new String(keyValue.getFamily()).equals("content")) {
 					pojo.setContent(new String(keyValue.getValue()));
 				} else if (new String(keyValue.getFamily()).equals("title")) {
 					pojo.setTitle(new String(keyValue.getValue()));
-				} else if (new String(keyValue.getFamily()).equals("url")) {
-					pojo.setUrl(new String(keyValue.getValue()));
 				}
-				pojo.setId(id);
 			}
+			pojo.setUrl(url);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -57,23 +55,22 @@ public class PageDAOHBaseImpl implements PageDAO {
 	}
 
 	@Override
-	public boolean exist(int id) {
+	public boolean exist(String url) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(String url) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void save(PagePOJO pojo) throws IOException {
-		Put put = new Put(String.valueOf(pojo.getId()).getBytes());
+		Put put = new Put(pojo.getUrl().getBytes());
 		put.add("content".getBytes(), null, pojo.getContent().getBytes());
 		put.add("title".getBytes(), null, pojo.getTitle().getBytes());
-		put.add("url".getBytes(), null, pojo.getUrl().getBytes());
 		try {
 			table.put(put);
 			table.close();
@@ -86,10 +83,9 @@ public class PageDAOHBaseImpl implements PageDAO {
 	@Override
 	public void save(Set<PagePOJO> set) throws IOException {
 		for (PagePOJO pojo : set) {
-			Put put = new Put(String.valueOf(pojo.getId()).getBytes());
+			Put put = new Put(pojo.getUrl().getBytes());
 			put.add("content".getBytes(), null, pojo.getContent().getBytes());
 			put.add("title".getBytes(), null, pojo.getTitle().getBytes());
-			put.add("url".getBytes(), null, pojo.getUrl().getBytes());
 			try {
 				table.put(put);
 			} catch (IOException e) {

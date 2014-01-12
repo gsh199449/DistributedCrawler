@@ -105,10 +105,4 @@ public class TestHBaseDAO {
 		dao.close();
 	}
 	
-	@Test
-	public void testDAOLoad() throws ZooKeeperConnectionException, IOException{
-		PageDAO dao = new PageDAOHBaseImpl("page");
-		System.out.println(dao.loadPage(3));
-		dao.close();
-	}
 }

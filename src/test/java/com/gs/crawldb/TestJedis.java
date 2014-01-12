@@ -13,4 +13,18 @@ public class TestJedis {
 		System.out.println(j.getResource().get("aa"));
 		j.getResource().set("java", "haha");
 	}
+	
+	@Test
+	public void testMov(){
+		JedisPool pool0 = new JedisPool(new Config(),"localhost",6377,1000,"940409",0);
+		JedisPool pool1= new JedisPool(new Config(),"localhost",6377,1000,"940409",1);
+		Jedis j0 = pool0.getResource();
+		Jedis j1 = pool1.getResource();
+		System.out.println(j1.get("1"));
+		j0.set("1", "haha");
+		j0.move("1", 1);
+		System.out.println(j1.get("1"));
+		
+		
+	}
 }

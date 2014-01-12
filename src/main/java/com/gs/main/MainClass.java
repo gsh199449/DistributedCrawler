@@ -44,8 +44,8 @@ public class MainClass {
 	private static int crawlDBToCrawlDB = 0;// CrawlDB的待抓取的数据库编号
 	private static int crawlDBCrawledDB = 1;// CrawlDB的已抓取的数据库编号
 	private static String solrURL = "http://gs-pc:8888/solr";// Solr服务器URL
-	private static String libsPath = "hdfs://gs-pc:9000/home/test/libs/";// Solr服务器URL
-	private static String[] jarsName = { "gson-2.2.4.jar" };// Solr服务器URL
+	private static String libsPath = "hdfs://gs-pc:9000/home/test/libs/";// 第三方包的存放文件夹
+	private static String[] jarsName = { "gson-2.2.4.jar" };// 第三方包名称
 	private static Logger LOG = LoggerFactory.getLogger(MainClass.class);
 	private static String hbaseTableName;
 
@@ -106,9 +106,8 @@ public class MainClass {
 			jarsName = conf.getStringArray("jarsName");
 		}
 		FileSystem fs = FileSystem.get(hadoopConf);
-		LOG.info("Read Configuration finish \n Start Clean HBase.");
-		//HBaseCleaner.clean(hbaseTableName);
-		LOG.info("Clean hbase finish!");
+		LOG.info("Read Configuration finish");
+
 		LOG.info("Job init "
 				+ jobName
 				+ " start time : "
@@ -125,7 +124,11 @@ public class MainClass {
 		for (String jar : jarsName) {
 			adder.add(libsPath + jar);
 		}
-		Job job = new Job(hadoopConf, jobName);
+		//HBaseCleaner.clean(hbaseTableName);
+		LOG.info("Clean hbase finish!");
+		/*new CrawlDB(crawlDBHost, crawlDBPort, crawlDBPassword, crawlDBTimeout,
+				crawlDBToCrawlDB, crawlDBCrawledDB).clean();//清空Redis缓存
+*/		Job job = new Job(hadoopConf, jobName);
 		job.setJarByClass(MainClass.class);
 		job.setMapperClass(CrawlMapper.class);
 		job.setOutputKeyClass(NullWritable.class);

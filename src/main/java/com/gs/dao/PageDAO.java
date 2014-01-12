@@ -7,9 +7,9 @@ import java.util.Set;
 import com.gs.model.PagePOJO;
 
 public interface PageDAO extends Closeable {
-	public PagePOJO loadPage(int id);
-	public boolean exist(int id);
-	public void delete(int id);
+	public PagePOJO loadPage(String url);
+	public boolean exist(String url);
+	public void delete(String url);
 	/**
 	 * 向数据库写入单个PagePOJO
 	 * @param pojo

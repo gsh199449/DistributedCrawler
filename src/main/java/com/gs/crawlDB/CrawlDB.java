@@ -17,6 +17,8 @@ public final class CrawlDB {
 	private static JedisPool tocrawl;
 	private static JedisPool crawled;
 	private static final Logger LOG = LoggerFactory.getLogger(CrawlDB.class);
+	private int toCrawlDB;
+	private int crawledDB;
 
 	/**
 	 * @param host
@@ -34,6 +36,8 @@ public final class CrawlDB {
 				toCrawlDB);
 		crawled = new JedisPool(new Config(), host, port, timeout, password,
 				crawledDB);
+		this.toCrawlDB = toCrawlDB;
+		this.crawledDB = crawledDB;
 		LOG.info("CrawlDB init");
 	}
 
@@ -45,7 +49,6 @@ public final class CrawlDB {
 	 */
 	public Set<URL> generate(final int maxGenerate) {
 		Jedis toj = tocrawl.getResource();
-		Jedis edj = crawled.getResource();
 		Set<URL> result = new HashSet<URL>();
 		for (int i = 0; i <= maxGenerate; i++) {
 			URL u = new URL();
@@ -53,13 +56,10 @@ public final class CrawlDB {
 			if (u.url == null || u.url.equals(""))
 				break;
 			u.level = Integer.valueOf(toj.get(u.url));
-			toj.del(u.url);
-			// toj.move(u.url, crawledDB);//TODO:Test It!!
+			toj.move(u.url, crawledDB);
 			result.add(u);
-			edj.set(u.url, String.valueOf(u.level));
 		}
 		tocrawl.returnResource(toj);
-		crawled.returnResource(edj);
 		return result;
 	}
 
@@ -90,5 +90,14 @@ public final class CrawlDB {
 		long size = toj.dbSize();
 		tocrawl.returnResource(toj);
 		return size == 0 ? true : false;
+	}
+	
+	/**
+	 * 清空缓存队列
+	 */
+	public void clean(){
+		Jedis toj = tocrawl.getResource();
+		toj.flushAll();
+		tocrawl.returnResource(toj);
 	}
 }

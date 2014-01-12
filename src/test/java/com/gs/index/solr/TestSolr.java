@@ -60,7 +60,7 @@ public class TestSolr {
 	
 	@Test
 	public void testSearch2() throws SolrServerException{
-		for(PagePOJO pojo : SolrSearcher.search("反腐", "http://localhost:8888/solr")){
+		for(PagePOJO pojo : SolrSearcher.search("中国", "http://localhost:8888/solr")){
 			System.out.println(pojo);
 		}
 	}

@@ -29,11 +29,11 @@ public class PageDAOMysqlImpl implements PageDAO {
 	}
 
 	@Override
-	public boolean exist(int id) {
+	public boolean exist(String url) {
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
-			String sql = "select count(*) from page where id = " + id + ";";
+			String sql = "select count(*) from page where url = " + url + ";";
 			stmt = (Statement) connection.createStatement(); // 创建用于执行静态sql语句的Statement对象
 			rs = stmt.executeQuery(sql);
 			if (rs.next()) {
@@ -74,17 +74,16 @@ public class PageDAOMysqlImpl implements PageDAO {
 	}
 
 	@Override
-	public PagePOJO loadPage(int id) {
+	public PagePOJO loadPage(String url) {
 		Statement stmt = null;
 		PagePOJO pojo = new PagePOJO();
 		try {
-			String sql = "select * form page where id  = " + id + ";";
+			String sql = "select * form page where url  = " + url + ";";
 			stmt = (Statement) connection.createStatement(); // 创建用于执行静态sql语句的Statement对象
 			ResultSet rs = stmt.executeQuery(sql);
 			pojo.setTitle(rs.getString("title"));
 			pojo.setContent(rs.getString("content"));
-			pojo.setId(id);
-			pojo.setUrl(rs.getString("url"));
+			pojo.setUrl(url);
 		} catch (SQLException e) {
 			LOG.error(e.getMessage());
 			e.printStackTrace();
@@ -99,10 +98,6 @@ public class PageDAOMysqlImpl implements PageDAO {
 		return pojo;
 	}
 
-	@Override
-	public void delete(int id) {
-		// TODO Auto-generated method stub
-	}
 
 	@Override
 	public void save(Set<PagePOJO> set) throws IOException {
@@ -112,6 +107,12 @@ public class PageDAOMysqlImpl implements PageDAO {
 
 	@Override
 	public void close() throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void delete(String url) {
 		// TODO Auto-generated method stub
 		
 	}

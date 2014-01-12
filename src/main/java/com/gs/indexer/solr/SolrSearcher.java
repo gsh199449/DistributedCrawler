@@ -50,6 +50,7 @@ public class SolrSearcher {
 		for (SolrDocument doc : docs) {
 			int id = Integer.valueOf((String) doc.getFieldValue("id"));
 			result.add(dao.loadPage(id));
+			//result.add(new PagePOJO("",id,"",""));
 		}
 		try {
 			dao.close();

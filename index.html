@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Distributedcrawler by gsh199449</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Distributedcrawler</h1>
+        <h2>DistributedCrawler</h2>
+        <a href="https://github.com/gsh199449/DistributedCrawler" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="distributedcrawler" class="anchor" href="#distributedcrawler"><span class="octicon octicon-link"></span></a>DistributedCrawler</h1>
+
+<h1>
+<a name="%E7%AE%80%E4%BB%8B" class="anchor" href="#%E7%AE%80%E4%BB%8B"><span class="octicon octicon-link"></span></a>简介</h1>
+
+<p>这是一个基于Hadoop的分布式爬虫，目前只支持抓取腾讯新闻中心的新闻内容。支持插件机制，可以通过实现Extractor接口自己编写插件已实现对于各种网站的抓取和内容提取。</p>
+
+<h1>
+<a name="%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95" class="anchor" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="octicon octicon-link"></span></a>使用方法</h1>
+
+<ol>
+<li>
+<p>在com.gs.main.MainClass中设置爬取时需要的各种参数.</p>
+
+<div class="highlight highlight-Java"><pre><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">rootPath</span> <span class="o">=</span> <span class="s">"hdfs://gs-pc:9000/home/test/"</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">rootPath</span> <span class="o">+</span> <span class="s">"qq.txt"</span><span class="o">;</span><span class="c1">// 首页的链接暂存地</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span><span class="c1">// 深度</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">topN</span> <span class="o">=</span> <span class="mi">80</span><span class="o">;</span><span class="c1">// 每页抓取的最大链接数</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">outputPath</span> <span class="o">=</span> <span class="n">rootPath</span> <span class="o">+</span> <span class="s">"output"</span><span class="o">;</span><span class="c1">// 最终结果的输出路径</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">jobName</span> <span class="o">=</span> <span class="s">"DistributeCrawler"</span><span class="o">;</span><span class="c1">// Job的名称</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">crawlDBHost</span> <span class="o">=</span> <span class="s">"localhost"</span><span class="o">;</span><span class="c1">//CrawlDB的IP</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">crawlDBPost</span> <span class="o">=</span> <span class="mi">6377</span><span class="o">;</span><span class="c1">//CrawlDB的端口</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">crawlDBPassword</span> <span class="o">=</span> <span class="s">"******"</span><span class="o">;</span><span class="c1">//CrawlDB的密码</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">crawlDBTimeout</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span><span class="c1">//CrawlDB的连接超时时间</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">crawlDBToCrawlDB</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="c1">//CrawlDB的待抓取的数据库编号</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">crawlDBCrawledDB</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span><span class="c1">//CrawlDB的已抓取的数据库编号</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">SolrURL</span> <span class="o">=</span> <span class="s">"http://localhost:8888/solr"</span><span class="o">;</span><span class="c1">//Solr服务器URL</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOG</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">MainClass</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</pre></div>
+</li>
+<li><p>启动带有Solr的Tomcat服务器.详细请参看: <a href="http://blog.csdn.net/gsh19940409/article/details/17886567">tomcat部署solr步骤</a> | <a href="http://blog.csdn.net/gsh19940409/article/details/17915223">通过Solr4.0.0实现分布式索引</a></p></li>
+<li><p>启动Redis服务器,然后FlushAll一下,免得有上次剩下的URL.</p></li>
+</ol><h1>
+<a name="%E6%8A%93%E5%8F%96%E6%B5%81%E7%A8%8B" class="anchor" href="#%E6%8A%93%E5%8F%96%E6%B5%81%E7%A8%8B"><span class="octicon octicon-link"></span></a>抓取流程</h1>
+
+<ol>
+<li>然后通过HDFS的本地计算将一个文件分发到各台Slaves上面。</li>
+<li>然后各台Slave机器调用map方法开始抓取,抓取之前先从CrawlDB中索取一些连接,默认数量设为20。数量的设置在<code>Crawler</code>里面的<code>maxGenerate</code>.若未达到topN和depth限制则将本页面的连接Inject到CrawlDB中。每一个页面抓取完之后转换成json格式都写入context中.</li>
+<li>每个页面通过<code>HttpClient</code>下载完成后，通过正则表达式进行过滤，只保留正文和标题，同时将这个页面封装为一个<code>PagePOJO</code>的POJO。这个POJO包含了正文，标题，URL，该页面的ID号（ID号是通过种子地址在种子文件中的偏移量也就是我们所谓的当前Slaves机器的ID号+一个叠加的计数器，即<code>ID=CrawlerID+counter</code>）。</li>
+<li>然后将这个POJO交给Json生成器来生成一个Json内容。</li>
+<li>最后若当前抓取器队列为空且CrawlDB为空的时候该抓取器退出并返回本次所有抓取的PagePOJO的Set.在后在map方法中通过Solr服务器将其索引.</li>
+</ol><h1>
+<a name="crawldb" class="anchor" href="#crawldb"><span class="octicon octicon-link"></span></a>CrawlDB</h1>
+
+<p>这是使用<code>Redis</code>实现的为抓取提供缓存的数据库.CrawlDB分为两个数据库,一个储存待抓取的URL,另一个储存已抓取的URL.对外提供<code>inject</code>和<code>generate</code>两个方法,<code>inject</code>是向CrawlDB中注入待抓取的连接的方法,<code>generate</code>是各个抽取器向CrawlDB索取url调用的方法,需要传入一个MAX返回值.</p>
+
+<h1>
+<a name="%E7%B4%A2%E5%BC%95%E6%B5%81%E7%A8%8B" class="anchor" href="#%E7%B4%A2%E5%BC%95%E6%B5%81%E7%A8%8B"><span class="octicon octicon-link"></span></a>索引流程</h1>
+
+<p>本项目提供两种索引方式,可在抓取的时候同时进行分布式索引,也可等抓取结束后通过生成的Json格式的数据文件索引.</p>
+
+<h2>
+<a name="%E7%A6%BB%E7%BA%BF%E7%B4%A2%E5%BC%95" class="anchor" href="#%E7%A6%BB%E7%BA%BF%E7%B4%A2%E5%BC%95"><span class="octicon octicon-link"></span></a>离线索引</h2>
+
+<ol>
+<li>首先通过<code>JsonReader</code>一行一行的读出json内容（每一行是一个Json表达式）。<code>JsonReader</code>是通过<code>RandomAccessFile</code>来实现的。因为他既可以满足从<code>InputStream</code>中按行读入的要求，还带有获取当前偏移量和skip方法，极为的好用。<code>JsonReader</code>返回一个<code>Hit</code>类型的封装。<code>Hit</code>封装了PagePOJO、文件名和在此文件中的起始偏移量。</li>
+<li>提取出每一个<code>Hit</code>里面的正文、文件名和偏移量，并用<code>Lucene</code>索引。不储存content，但是储存文件名和起始偏移量。这样就可以摆脱对数据库的依赖。</li>
+</ol><h2>
+<a name="%E5%88%86%E5%B8%83%E5%BC%8F%E7%B4%A2%E5%BC%95" class="anchor" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%B4%A2%E5%BC%95"><span class="octicon octicon-link"></span></a>分布式索引</h2>
+
+<ul>
+<li>分布式索引通过<code>Lucene</code>其下的一个子项目<code>Solr</code>实现.具体由<code>com.gs.indexer.solr.SolrIndex</code>负责.</li>
+</ul><h1>
+<a name="%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8" class="anchor" href="#%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8"><span class="octicon octicon-link"></span></a>贝叶斯分类器</h1>
+
+<ul>
+<li>在搜索方法中加入了分类的逻辑，如果搜索时在参数中声明需要分类
+，则通过贝叶斯方法进行分类。</li>
+<li>使用贝叶斯分类器的时候，要进行参数设置，并通过<code>MapMaker</code>生成每一个类的map，即训练分类器。</li>
+</ul><h2>
+<a name="%E8%AE%AD%E7%BB%83%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8" class="anchor" href="#%E8%AE%AD%E7%BB%83%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8"><span class="octicon octicon-link"></span></a>训练贝叶斯分类器</h2>
+
+<ol>
+<li>将训练集生成为<code>TrainingDataManager</code>识别放map格式。</li>
+<li>调用<code>MapMaker</code>的make方法，传入训练集的根目录。会在每一个分类的目录下生成一个map文件，里面是存储当前分类的每一个词的词频。<strong>注意：如果训练集的文本不是txt或者TXT格式的话需要在<code>make</code>方法里面设置文件类型。</strong>
+</li>
+<li>在<code>StopWordsHandler</code>里面设置停用词的路径。</li>
+<li>在<code>TrainingDataManager</code>中设置训练好的map的路径，也就是训练集的根路径。</li>
+<li>
+<code>BayesClassifier</code>就是分类器的主控类，里面有一个<code>zoomFactor</code>参数的设置，这个主要是保证在训练集大小不一样的情况下保证分类质量。即当通过贝叶斯公式算出的概率太小或者太大时，调节这个参数可使得算出的概率数值在可控范围之内，一旦数值过小（全都为0）或者过大（显示无限大）是每一个分类的概率都是一样的，这样分类之后各个类就无从排序，分的类也就没有任何意义。更换训练集之后，一定记得查看各个分类的概率数值，调整<code>zoomFactor</code>。</li>
+<li>都设置好之后调用<code>BayesClassifier</code>的<code>classify</code>方法传入待分类的文本，返回值就是<code>Strng</code>类型的分类名。注意：<code>BayesClassifier</code>是单例模式不可直接构造需要调用<code>getInstance</code>方法。</li>
+</ol><h1>
+<a name="%E4%BD%BF%E7%94%A8carrot2%E6%8F%92%E4%BB%B6%E8%BF%9B%E8%A1%8C%E8%81%9A%E7%B1%BB" class="anchor" href="#%E4%BD%BF%E7%94%A8carrot2%E6%8F%92%E4%BB%B6%E8%BF%9B%E8%A1%8C%E8%81%9A%E7%B1%BB"><span class="octicon octicon-link"></span></a>使用Carrot2插件进行聚类</h1>
+
+<p>在搜索模块包含了一个聚类插件,是通过Carrot2实现的,具体使用方法如下.</p>
+
+<h2>
+<a name="%E5%AF%B9%E6%89%80%E6%9C%89%E7%9A%84%E6%96%87%E6%A1%A3%E8%BF%9B%E8%A1%8C%E8%81%9A%E7%B1%BB" class="anchor" href="#%E5%AF%B9%E6%89%80%E6%9C%89%E7%9A%84%E6%96%87%E6%A1%A3%E8%BF%9B%E8%A1%8C%E8%81%9A%E7%B1%BB"><span class="octicon octicon-link"></span></a>对所有的文档进行聚类</h2>
+
+<p>调用<code>com.gs.cluster.Cluster</code>这个类的cluster方法,并传入由Crawler爬取好的Json格式的文档的的路径,即可返回一个<code>ProcessingResult</code>类型的Result.<code>ProcessingResult</code>里面的内容查看方法请参考<a href="http://download.carrot2.org/stable/javadoc/">Carrot2文档</a>.</p>
+
+<h2>
+<a name="%E5%AF%B9%E6%8C%87%E5%AE%9A%E7%9A%84%E6%96%87%E6%A1%A3%E8%BF%9B%E8%A1%8C%E8%81%9A%E7%B1%BB" class="anchor" href="#%E5%AF%B9%E6%8C%87%E5%AE%9A%E7%9A%84%E6%96%87%E6%A1%A3%E8%BF%9B%E8%A1%8C%E8%81%9A%E7%B1%BB"><span class="octicon octicon-link"></span></a>对指定的文档进行聚类</h2>
+
+<p>这个方法适用于搜索时候对于搜索的结果进行聚类.搜索完毕之后将索引的<code>PagePOJO</code>封装成一个List传给cluster,聚类完毕之后,返回一个类型为<code>Map&lt;String,List&lt;String&gt;&gt;</code>的result.<code>Map&lt;String,List&lt;String&gt;&gt;</code>.这个map的key存放的是类型的名称,value的List里面存放的是该类型包含的所有文档的标题.</p>
+
+<h1>
+<a name="windowsearcher" class="anchor" href="#windowsearcher"><span class="octicon octicon-link"></span></a>WindowSearcher</h1>
+
+<p>这是一个由JavaSwing实现的界面化的搜索工具.</p>
+
+<h2>
+<a name="%E7%AB%99%E7%82%B9%E6%B5%8B%E8%AF%95" class="anchor" href="#%E7%AB%99%E7%82%B9%E6%B5%8B%E8%AF%95"><span class="octicon octicon-link"></span></a>站点测试</h2>
+
+<p>这个Pane是用来测试实验室的几个网站是否正常.</p>
+
+<h2>
+<a name="index" class="anchor" href="#index"><span class="octicon octicon-link"></span></a>Index</h2>
+
+<p>这个Pane是用来对Hadoop爬虫处理好的Json格式的新闻内容进行索引的工具.主要通过Lucene实现索引.在Json框中输入文件所在的文件夹的位置,index框中输入需要存放index文件的文件夹的路径.</p>
+
+<h1>
+<a name="%E4%B8%8B%E4%B8%80%E6%AD%A5%E7%9A%84%E5%B7%A5%E4%BD%9C" class="anchor" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="octicon octicon-link"></span></a>下一步的工作</h1>
+
+<ul>
+<li>搭建一个分布式的Solr服务器集群</li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/gsh199449/DistributedCrawler/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/gsh199449/DistributedCrawler/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/gsh199449/DistributedCrawler"></a> is maintained by <a href="https://github.com/gsh199449">gsh199449</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>

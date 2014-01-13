@@ -17,4 +17,10 @@ public class URL {
 	}
 
 	public URL() {}
+
+	@Override
+	public String toString() {
+		return "URL [" + (url != null ? "url=" + url + ", " : "") + "level="
+				+ level + "]";
+	}
 }

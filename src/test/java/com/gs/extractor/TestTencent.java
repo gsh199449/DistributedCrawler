@@ -14,7 +14,7 @@ public class TestTencent {
 	public void test() throws IOException{
 		Extractor te = new TencentExtractor(FileUtils.readFileToString(new File("D://Test//tencent.txt"),"gb2312"), 1, 100, 3);
 		long start = System.currentTimeMillis();
-		te.proceed();
+		te.process();
 		System.out.println(te.getContent());
 		System.out.println(te.getTitle());
 		System.out.println(te.getUrls());

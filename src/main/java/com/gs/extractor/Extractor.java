@@ -32,5 +32,5 @@ public abstract class Extractor {
 		return content;
 	}
 
-	public abstract void proceed();
+	public abstract Extractor process();
 }

@@ -1,6 +1,7 @@
 package com.gs.indexer.solr;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,11 +29,12 @@ public class SolrSearcher {
 	 * @param serverurl Solr服务器的URL,例如:http://localhost:8983/solr/
 	 * @return 结果集
 	 * @throws SolrServerException
+	 * @throws SQLException 
 	 * @throws IOException 
 	 * @throws ZooKeeperConnectionException 
 	 */
 	public static final Set<PagePOJO> search(final String queryString,
-			final String serverurl) throws SolrServerException {
+			final String serverurl) throws SolrServerException{
 		PageDAO dao = null;
 		try {
 			dao = new PageDAOHBaseImpl("page");
@@ -59,7 +61,12 @@ public class SolrSearcher {
 		String[] queryStrings = queryString.split(" ");
 		for (SolrDocument doc : docs) {
 			String url = (String) doc.getFieldValue("url");
-			PagePOJO pojo = dao.loadPage(url);
+			PagePOJO pojo = null;
+			try {
+				pojo = dao.loadPage(url);
+			} catch (SQLException e) {
+				LOG.error(e.getMessage());
+			}
 			for (String q : queryStrings) {
 				pojo.setContent(pojo.getContent().replaceAll(q,
 						"<font color=\"red\">" + q + "</font>"));

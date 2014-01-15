@@ -29,7 +29,7 @@ public class PageDAOMysqlImpl implements PageDAO {
 	}
 
 	@Override
-	public boolean exist(String url) {
+	public boolean exist(String url) throws SQLException {
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
@@ -41,19 +41,20 @@ public class PageDAOMysqlImpl implements PageDAO {
 			}
 		} catch (SQLException e) {
 			LOG.error(e.getMessage());
-			e.printStackTrace();
+			throw e;
 		} finally {
 			try {
 				stmt.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage());
+				throw e;
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public void save(PagePOJO pojo) {
+	public void save(PagePOJO pojo) throws SQLException {
 		LOG.info("Save PagePOJO : "+pojo);
 		Statement stmt = null;
 		try {
@@ -68,13 +69,13 @@ public class PageDAOMysqlImpl implements PageDAO {
 			stmt.close();
 		} catch (SQLException e) {
 			LOG.error(e.getMessage());
-			e.printStackTrace();
+			throw e;
 		}
 
 	}
 
 	@Override
-	public PagePOJO loadPage(String url) {
+	public PagePOJO loadPage(String url) throws SQLException {
 		Statement stmt = null;
 		PagePOJO pojo = new PagePOJO();
 		try {
@@ -86,13 +87,13 @@ public class PageDAOMysqlImpl implements PageDAO {
 			pojo.setUrl(url);
 		} catch (SQLException e) {
 			LOG.error(e.getMessage());
-			e.printStackTrace();
+			throw e;
 		} finally {
 			try {
 				stmt.close();
 			} catch (SQLException e) {
 				LOG.error(e.getMessage());
-				e.printStackTrace();
+				throw e;
 			}
 		}
 		return pojo;

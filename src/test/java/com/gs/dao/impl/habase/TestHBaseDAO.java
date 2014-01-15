@@ -1,6 +1,7 @@
 package com.gs.dao.impl.habase;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public class TestHBaseDAO {
 	}
 	
 	@Test
-	public void testSave() throws ZooKeeperConnectionException, IOException{
+	public void testSave() throws ZooKeeperConnectionException, IOException, SQLException{
 		PagePOJO pojo = new PagePOJO("http://haha",3,"XIXIX","ppppp");
 		PageDAO dao = new PageDAOHBaseImpl("page");
 		dao.save(pojo);

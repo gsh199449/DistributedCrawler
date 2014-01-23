@@ -56,5 +56,10 @@
      	<artifactId>hbase</artifactId>
      	<version>0.94.11</version>
      </dependency>
+     <dependency>
+     	<groupId>mysql</groupId>
+     	<artifactId>mysql-connector-java</artifactId>
+     	<version>5.1.27</version>
+     </dependency>
   </dependencies>
 </project>

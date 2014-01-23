@@ -1,7 +1,7 @@
 DistributedCrawler
 =================
 
-[![Build Status](https://travis-ci.org/gsh199449/DistributedCrawler.png?branch=master)](https://travis-ci.org/gsh199449/DistributedCrawler)
+本项目由Travis-ci提供持续集成[![Build Status](https://travis-ci.org/gsh199449/DistributedCrawler.png?branch=master)](https://travis-ci.org/gsh199449/DistributedCrawler)
 
 # 简介 #
 

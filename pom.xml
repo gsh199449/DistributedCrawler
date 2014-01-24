@@ -61,5 +61,17 @@
      	<artifactId>mysql-connector-java</artifactId>
      	<version>5.1.27</version>
      </dependency>
+     <dependency>
+     	<groupId>org.carrot2</groupId>
+     	<artifactId>carrot2-core</artifactId>
+     	<version>3.8.1</version>
+     </dependency>
+     <!--  <dependency>
+            <groupId>org.wltea</groupId>
+            <artifactId>IKAnalyzer</artifactId>
+            <version>3.2.8</version>
+            <systemPath>D:/Tools/IKAnalyzer2012/IKAnalyzer2012.jar</systemPath>
+            <scope>system</scope>
+        </dependency> -->
   </dependencies>
 </project>

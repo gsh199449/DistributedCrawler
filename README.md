@@ -1,6 +1,8 @@
 DistributedCrawler
 =================
 
+本项目由Travis-ci提供持续集成[![Build Status](https://travis-ci.org/gsh199449/DistributedCrawler.png?branch=master)](https://travis-ci.org/gsh199449/DistributedCrawler)
+
 # 简介 #
 
 这是一个基于Hadoop的分布式爬虫，目前只支持抓取腾讯新闻中心的新闻内容。支持插件机制，可以通过实现Extractor接口自己编写插件已实现对于各种网站的抓取和内容提取。
